@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <application>
+        <!-- 3D 맞추기 도구: SpatialGlass 필름의 렌즈 값(간격·기울기·위상·추적 세기)을 맞추고
+             SBS 사진을 3D 로 본다. 플레이어가 같은 값을 쓴다. 런처에 따로 아이콘을 둔다. -->
+        <activity
+            android:name=".glass.GlassToolActivity"
+            android:label="DepthFlix 3D 맞추기"
+            android:exported="true"
+            android:screenOrientation="landscape"
+            android:launchMode="singleTop"
+            android:theme="@android:style/Theme.Material.NoActionBar.Fullscreen"
+            android:configChanges="orientation|screenSize|screenLayout|smallestScreenSize|keyboardHidden|density|uiMode">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="image/*" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.SEND_MULTIPLE" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="image/*" />
+            </intent-filter>
+        </activity>
+    </application>
+</manifest>

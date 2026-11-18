@@ -52,6 +52,14 @@ android {
             applicationIdSuffix ".redmagic"
         }
 
+        // 갤럭시 S25 Ultra + SpatialGlass 3D 필름 (2026-11). Leia 패널이 아니라 붙이는
+        // 렌즈 필름이라, 위빙과 눈 추적(MediaPipe 홍채)을 앱이 직접 한다 — src/glass/.
+        // 렌즈 값은 같은 앱 안의 "3D 맞추기" 도구(GlassToolActivity)에서 맞춘다.
+        glass {
+            dimension "device"
+            applicationIdSuffix ".glass"
+        }
+
         github {
             dimension "dist"
             buildConfigField "boolean", "PLAY", "false"
@@ -82,6 +90,10 @@ android {
     packaging {
         jniLibs { useLegacyPackaging true }
     }
+
+    // glass 의 얼굴 모델(face_landmarker.task)은 MediaPipe 가 메모리 매핑으로 읽으므로
+    // 압축하지 않고 넣는다.
+    androidResources { noCompress 'task' }
 
     signingConfigs {
         release {
@@ -136,6 +148,9 @@ abstract class DexLeiaBridge extends DefaultTask {
 androidComponents {
     // Lume Pad 2 는 Play 에 올리지 않는다 (실기도 없다). lumepadPlay 는 만들지 않는다.
     beforeVariants(selector().withFlavor(new kotlin.Pair("device", "lumepad"))
+                             .withFlavor(new kotlin.Pair("dist", "play"))) { it.enable = false }
+    // glass 도 아직 Play 판은 없다 (play 의 Panel 은 Leia 커넥터를 빌려 오는 전용 경로다).
+    beforeVariants(selector().withFlavor(new kotlin.Pair("device", "glass"))
                              .withFlavor(new kotlin.Pair("dist", "play"))) { it.enable = false }
 
     // redmagic + github: 커넥터 jar 를 실행 시에도 동봉한다 (위 dependencies 주석 참고).
@@ -235,4 +250,9 @@ dependencies {
     // 따로 붙인다 (Gradle 에 redmagicGithubImplementation 같은 조합 설정은 없다).
     lumepadImplementation fileTree(dir: 'libs/lumepad', include: ['leia-cnsdk*.jar'])
     redmagicCompileOnly   fileTree(dir: 'libs/redmagic', include: ['leia-cnsdk*.jar'])
+    // glass: github 판은 LeiaBackend 를 같이 컴파일하므로 컴파일에만 커넥터가 필요하다.
+    // 실행 시엔 Panel.create 가 GlassBackend 를 고르므로 Leia 코드는 불리지 않는다.
+    glassCompileOnly      fileTree(dir: 'libs/redmagic', include: ['leia-cnsdk*.jar'])
+    // 눈 추적: 앞카메라 영상에서 홍채 중심을 찾는다 (Apache-2.0).
+    glassImplementation 'com.google.mediapipe:tasks-vision:0.10.21'
 }

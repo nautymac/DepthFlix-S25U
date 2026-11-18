@@ -11,7 +11,22 @@ import com.nauty.p3d.leia.LeiaBackend;
  */
 public final class Panel {
 
-    public static PanelBackend create(Context ctx) { return new LeiaBackend(); }
+    /**
+     * glass(갤럭시 S25 Ultra + SpatialGlass 필름)는 Leia 가 아니다 — 위빙과 눈 추적을
+     * 우리가 직접 한다. 그 백엔드는 glass 소스셋에만 있어서(MediaPipe 의존) 이름으로 만든다.
+     */
+    private static final String GLASS_BACKEND = "com.nauty.p3d.glass.GlassBackend";
+
+    public static PanelBackend create(Context ctx) {
+        if ("glass".equals(com.nauty.p3d.BuildConfig.FLAVOR_device)) {
+            try {
+                return (PanelBackend) Class.forName(GLASS_BACKEND).newInstance();
+            } catch (Exception e) {
+                throw new IllegalStateException("glass 백엔드를 만들 수 없다", e);
+            }
+        }
+        return new LeiaBackend();
+    }
 
     private Panel() {}
 }

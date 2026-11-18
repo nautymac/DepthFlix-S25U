@@ -144,6 +144,27 @@ public class Stereo3DView extends GLSurfaceView {
         super.onPause();
     }
 
+    /**
+     * 화면에 직접 위빙하는 마지막 단계 (S25 Ultra + SpatialGlass 처럼 필름을 우리가
+     * 맞추는 기기). 없으면 지금까지대로 SBS 를 그대로 보여준다.
+     */
+    public interface Weaver {
+        /** GL 스레드. 컨텍스트가 (다시) 만들어진 뒤 처음 그리기 전에 한 번. */
+        void onSurfaceCreated();
+
+        /**
+         * GL 스레드. 화면(기본 프레임버퍼, 이미 바인드됨) w x h 에 그린다.
+         * sbsTexture 는 왼쪽 절반이 좌안, 오른쪽 절반이 우안이고 각 절반이 화면 전체로
+         * 늘어나는 비율로 들어 있다.
+         */
+        void draw(int sbsTexture, int width, int height);
+    }
+
+    private volatile Weaver weaver;
+
+    /** 3D 출력의 마지막 단계를 맡긴다. null 이면 SBS 를 그대로 보여준다. */
+    public void setWeaver(Weaver w) { weaver = w; contentChanged(); }
+
     public void setCallback(Callback cb)        { callback = cb; }
 
     /**
@@ -313,6 +334,8 @@ public class Stereo3DView extends GLSurfaceView {
         private ExternalGlTarget external;
         private Fbo fbo;
         private int surfW, surfH;
+        /** GL 자원을 이 컨텍스트에 만든 위버. 다르면 onSurfaceCreated 를 불러 준다. */
+        private Weaver weaverReady;
 
         /**
          * 도착했지만 아직 소비하지 않은 프레임 수.
@@ -336,6 +359,7 @@ public class Stereo3DView extends GLSurfaceView {
             src       = new SourceRenderer(getContext());
             blit      = new BlitRenderer(getContext());
             subs      = new SubtitleRenderer();
+            weaverReady = null;     // 새 컨텍스트: 위빙 프로그램도 다시 만들어야 한다
 
             final Surface s = new Surface(surfaceTexture);
             final SurfaceTexture st = surfaceTexture;
@@ -436,7 +460,14 @@ public class Stereo3DView extends GLSurfaceView {
                 GLES20.glViewport(0, 0, surfW, surfH);
                 GLES20.glClearColor(0f, 0f, 0f, 1f);
                 GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
-                blit.draw(fbo.texture(), 0f, 0f, 1f, 1f);
+                Weaver w = weaver;
+                if (out == Output.THREE_D && w != null) {
+                    // 필름을 우리가 맞추는 기기: 여기서 렌즈에 맞춰 위빙한다.
+                    if (weaverReady != w) { w.onSurfaceCreated(); weaverReady = w; }
+                    w.draw(fbo.texture(), surfW, surfH);
+                } else {
+                    blit.draw(fbo.texture(), 0f, 0f, 1f, 1f);
+                }
             }
 
             // 그리는 동안 새 프레임이 들어왔으면 다시 요청한다.

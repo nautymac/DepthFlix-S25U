@@ -26,14 +26,14 @@ Leia 태블릿용 [DepthFlix](https://github.com/nautymac/DepthFlix)의 **갤럭
 | **정중앙 배치** | 카메라 구멍과 상관없이 그림을 화면 정중앙에 같은 여백으로 놓습니다. |
 | **USB 드라이브** | 목록 위 **USB** 버튼. 처음 한 번 드라이브를 허락하면 폴더·영상·사진을 바로 둘러보고 3D로 엽니다. 버튼을 길게 누르면 다른 드라이브를 고릅니다. |
 | **자막** | 영상 옆의 .srt/.smi 등을 자동으로 붙입니다(USB 포함, 한국어 우선). 없으면 영상 안의 자막을 자동으로 켭니다. |
-| **3D 맞추기** | 목록 위 **3D 맞추기** 버튼(런처에도 아이콘): 2D 안내 화면에서 큰 버튼 하나로 가로·세로 줄을 맞추고, SBS 사진을 3D로 봅니다. 플레이어와 같은 값을 씁니다. |
+| **3D 맞추기** | 목록 위 **3D 맞추기** 버튼: 2D 안내 화면에서 큰 버튼 하나로 가로·세로 줄을 맞추고, SBS 사진을 3D로 봅니다. 플레이어와 같은 값을 씁니다. |
 | **그 밖에** | SMB·DLNA·URL 재생, DTS·AC3 소리 재생(FFmpeg), 이어 보기 등 DepthFlix 기능 그대로. |
 
 ### 사용법
 
 **1. 처음 한 번: 가로·세로 줄 맞추기**
 
-목록 화면 위의 **3D 맞추기** 버튼(또는 런처의 *DepthFlix 3D 맞추기*)을 누르면 2D 화면에 안내가 뜹니다.
+목록 화면 위의 **3D 맞추기** 버튼을 누르면 2D 화면에 안내가 뜹니다. 게임 SBS 스크린샷 6장이 기본 사진으로 들어 있어 바로 3D를 볼 수 있습니다(길게 눌러 ◀ ▶로 넘기기).
 
 ![목록 화면의 3D 맞추기 버튼](docs/images/list-buttons.png)
 
@@ -119,14 +119,14 @@ The film is **only a lens**: the phone has no 3D engine. So the app does it itse
 | **Dead-centre placement** | The picture sits in the exact centre of the panel with equal bars, whatever the camera cutout does to the window. |
 | **USB drives** | The **USB** button above the list. Allow the drive once, then browse its folders, videos and photos and open them in 3D. Long-press to pick another drive. |
 | **Subtitles** | Picks up .srt/.smi files next to the video automatically (USB included, Korean first); otherwise turns on the video's built-in subtitles. |
-| **3D setup (3D Fit)** | The **3D setup** button on the list screen (also a launcher icon): a 2D guide with one big button to line up the lens (horizontal, vertical), plus an SBS photo viewer; the player uses the same values. |
+| **3D setup (3D Fit)** | The **3D setup** button on the list screen: a 2D guide with one big button to line up the lens (horizontal, vertical), plus an SBS photo viewer; the player uses the same values. |
 | **And the rest** | SMB, DLNA and URL playback, DTS/AC3 audio (FFmpeg), resume, and the other DepthFlix features. |
 
 ### How to use
 
 **1. Once: line up the lens (horizontal and vertical lines)**
 
-Tap **3D setup** at the top of the list screen (or *DepthFlix 3D Fit* in the launcher). It opens in 2D with a short guide. (The screenshots show the Korean UI; on an English phone the app is in English.)
+Tap **3D setup** at the top of the list screen. It opens in 2D with a short guide. Six SBS game screenshots come built in, so there is 3D to look at right away (long-press, then ◀ ▶). (The screenshots show the Korean UI; on an English phone the app is in English.)
 
 ![The 3D setup button on the list screen](docs/images/list-buttons.png)
 

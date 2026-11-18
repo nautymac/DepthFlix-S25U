@@ -277,6 +277,7 @@ public class GlassToolActivity extends Activity {
         setContentView(root);
 
         renderer.setImage(SampleImage.create());
+        seedDefaultPhotos();
         photos.addAll(storedPhotos());
         refreshMenu();
         if (!openFromIntent(getIntent())) {
@@ -938,6 +939,49 @@ public class GlassToolActivity extends Activity {
             Log.w(TAG, "cannot create " + d);
         }
         return d;
+    }
+
+    /**
+     * First run only: copies the pictures bundled under assets/default_photos/ into the
+     * photo store, so the tool opens on a real 3D picture without anyone adding one. The
+     * first file is the one it opens on (Stellar Blade). Only when the store is empty, so
+     * nothing is duplicated; without the folder the built-in sample is shown.
+     */
+    private void seedDefaultPhotos() {
+        android.content.SharedPreferences sp = getSharedPreferences("stereo", MODE_PRIVATE);
+        if (sp.getBoolean("defaultPhotosSeeded", false)) {
+            return;
+        }
+        sp.edit().putBoolean("defaultPhotosSeeded", true).apply();
+        File[] have = photoDir().listFiles();
+        if (have != null && have.length > 0) {
+            return;   // the user already has pictures here; do not add copies
+        }
+        String[] names;
+        try {
+            names = getAssets().list("default_photos");
+        } catch (java.io.IOException e) {
+            return;
+        }
+        if (names == null || names.length == 0) {
+            return;
+        }
+        java.util.Arrays.sort(names);
+        for (int k = 0; k < names.length; k++) {
+            // Stamp 0 sorts them ahead of anything the user adds later.
+            File out = new File(photoDir(), String.format(Locale.US, "%013d_%02d_%s", 0L, k, names[k]));
+            try (java.io.InputStream in = getAssets().open("default_photos/" + names[k]);
+                 java.io.OutputStream os = new java.io.FileOutputStream(out)) {
+                byte[] buf = new byte[64 * 1024];
+                int n;
+                while ((n = in.read(buf)) > 0) {
+                    os.write(buf, 0, n);
+                }
+            } catch (java.io.IOException e) {
+                Log.w(TAG, "default photo " + names[k], e);
+            }
+        }
+        sp.edit().putInt("photoIndex", 0).apply();
     }
 
     private java.util.List<File> storedPhotos() {

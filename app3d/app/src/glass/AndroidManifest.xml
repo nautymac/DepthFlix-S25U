@@ -3,7 +3,9 @@
 
     <application>
         <!-- 3D 맞추기 도구: SpatialGlass 필름의 렌즈 값(간격·기울기·위상·추적 세기)을 맞추고
-             SBS 사진을 3D 로 본다. 플레이어가 같은 값을 쓴다. 런처에 따로 아이콘을 둔다. -->
+             SBS 사진을 3D 로 본다. 플레이어가 같은 값을 쓴다.
+             런처 아이콘은 두지 않는다 — 같은 앱의 두 번째 아이콘을 지우면 앱이 통째로 지워져
+             둘 다 사라진다. DepthFlix 목록 화면의 "3D 맞추기" 버튼으로 연다. -->
         <activity
             android:name=".glass.GlassToolActivity"
             android:label="@string/glass_tool_label"
@@ -12,10 +14,6 @@
             android:launchMode="singleTop"
             android:theme="@android:style/Theme.Material.NoActionBar.Fullscreen"
             android:configChanges="orientation|screenSize|screenLayout|smallestScreenSize|keyboardHidden|density|uiMode">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
                 <category android:name="android.intent.category.DEFAULT" />

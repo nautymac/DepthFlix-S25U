@@ -134,6 +134,15 @@ public class MainActivity extends Activity {
             });
             ((LinearLayout.LayoutParams) setup.getLayoutParams()).weight = 0.7f;
         }
+        // Same height for every button in the row. In portrait a long label ("URL/스트리밍
+        // 열기") wraps to two lines and the row looked ragged; matching the row's height
+        // keeps them even. With four buttons they also share the width equally.
+        boolean four = row.getChildCount() >= 4;
+        for (int i = 0; i < row.getChildCount(); i++) {
+            LinearLayout.LayoutParams p = (LinearLayout.LayoutParams) row.getChildAt(i).getLayoutParams();
+            p.height = ViewGroup.LayoutParams.MATCH_PARENT;
+            if (four) p.weight = 1f;
+        }
         root.addView(row);
 
         crumb = new TextView(this);

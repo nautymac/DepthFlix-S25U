@@ -58,6 +58,13 @@ final class StereoRenderer implements GLSurfaceView.Renderer {
             + "uniform int uHasImage;\n"
             + "uniform sampler2D uWeave;\n" // WeaveTable: row 0 left weights (rgb), row 1 right
             + "uniform float uShift;\n"    // depth: views pushed apart, fraction of the eye width
+            + "uniform float uBoost;\n"    // 3D brightness lift, 1 = none (see GlassWeaver.tone)
+            + "uniform float uContrast;\n" // 3D contrast, 1 = none
+            + "\n"
+            + "vec3 tone(vec3 c) {\n"
+            + "  c = 1.0 - pow(1.0 - clamp(c, 0.0, 1.0), vec3(uBoost));\n"
+            + "  return clamp((c - 0.5) * uContrast + 0.5, 0.0, 1.0);\n"
+            + "}\n"
             + "\n"
             + "vec3 sampleImage(vec2 t) { return texture2D(uTex, vec2(t.x, 1.0 - t.y)).rgb; }\n"
             + "\n"
@@ -105,7 +112,7 @@ final class StereoRenderer implements GLSurfaceView.Renderer {
             + "    gl_FragColor = vec4(sampleImage(uv), 1.0);\n"
             + "    return;\n"
             + "  }\n"
-            + "  gl_FragColor = vec4(weave(sampleEye(uv, 0.0), sampleEye(uv, 1.0)), 1.0);\n"
+            + "  gl_FragColor = vec4(weave(tone(sampleEye(uv, 0.0)), tone(sampleEye(uv, 1.0))), 1.0);\n"
             + "}\n";
 
     private final Settings settings;
@@ -139,6 +146,8 @@ final class StereoRenderer implements GLSurfaceView.Renderer {
     private int uHasImage;
     private int uWeave;
     private int uShift;
+    private int uBoost;
+    private int uContrast;
     private int weaveTexture;
 
     /**
@@ -197,6 +206,8 @@ final class StereoRenderer implements GLSurfaceView.Renderer {
         uHasImage = GLES20.glGetUniformLocation(program, "uHasImage");
         uWeave = GLES20.glGetUniformLocation(program, "uWeave");
         uShift = GLES20.glGetUniformLocation(program, "uShift");
+        uBoost = GLES20.glGetUniformLocation(program, "uBoost");
+        uContrast = GLES20.glGetUniformLocation(program, "uContrast");
 
         float[] verts = {-1f, -1f, 1f, -1f, -1f, 1f, 1f, 1f};
         quad = ByteBuffer.allocateDirect(verts.length * 4).order(ByteOrder.nativeOrder()).asFloatBuffer();
@@ -326,6 +337,8 @@ final class StereoRenderer implements GLSurfaceView.Renderer {
         GLES20.glUniform1i(uWeave, 1);
         GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
         GLES20.glUniform1f(uShift, mode == Settings.MODE_3D ? DEPTH_SHIFT : 0f);
+        GLES20.glUniform1f(uBoost, settings.boost);
+        GLES20.glUniform1f(uContrast, settings.contrast);
         GLES20.glEnableVertexAttribArray(aPos);
         GLES20.glVertexAttribPointer(aPos, 2, GLES20.GL_FLOAT, false, 0, quad);
         GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, 4);

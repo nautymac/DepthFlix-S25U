@@ -43,6 +43,15 @@ final class GlassWeaver implements Stereo3DView.Weaver {
             + "uniform sampler2D uWeave;\n"
             + "uniform vec2 uOrigin;\n"       // 창의 왼쪽 아래가 패널에서 어디인지 (패널 화소)
             + "uniform vec2 uShift;\n"        // 그림을 패널 정중앙으로 옮기는 양 (창 화소)
+            + "uniform float uBoost;\n"       // 밝기: 1 = 그대로
+            + "uniform float uContrast;\n"    // 대비: 1 = 그대로
+            + "\n"
+            // 3D 는 각 눈에 화소의 일부만 가서 어둡다. 어두운 쪽·중간을 끌어올리고(흰색은 그대로)
+            // 대비를 준다. 위빙 전에 그림에만 걸어 두 그림 사이의 틈(분리)은 건드리지 않는다.
+            + "vec3 tone(vec3 c) {\n"
+            + "  c = 1.0 - pow(1.0 - clamp(c, 0.0, 1.0), vec3(uBoost));\n"
+            + "  return clamp((c - 0.5) * uContrast + 0.5, 0.0, 1.0);\n"
+            + "}\n"
             + "\n"
             + "float phaseAt() {\n"
             + "  vec2 p = gl_FragCoord.xy + uOrigin;\n"   // 렌즈는 패널 위에 있다
@@ -56,8 +65,8 @@ final class GlassWeaver implements Stereo3DView.Weaver {
             + "    gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);\n"
             + "    return;\n"
             + "  }\n"
-            + "  vec3 l = texture2D(uTex, vec2(uv.x * 0.5, uv.y)).rgb;\n"
-            + "  vec3 r = texture2D(uTex, vec2(0.5 + uv.x * 0.5, uv.y)).rgb;\n"
+            + "  vec3 l = tone(texture2D(uTex, vec2(uv.x * 0.5, uv.y)).rgb);\n"
+            + "  vec3 r = tone(texture2D(uTex, vec2(0.5 + uv.x * 0.5, uv.y)).rgb);\n"
             + "  float ph = phaseAt();\n"
             + "  vec3 wl = texture2D(uWeave, vec2(ph, 0.25)).rgb;\n"
             + "  vec3 wr = texture2D(uWeave, vec2(ph, 0.75)).rgb;\n"
@@ -75,6 +84,8 @@ final class GlassWeaver implements Stereo3DView.Weaver {
 
     private int uOrigin;
     private int uShift;
+    private int uBoost;
+    private int uContrast;
 
     private int program;
     private int aPos;
@@ -136,6 +147,8 @@ final class GlassWeaver implements Stereo3DView.Weaver {
         uWeave = GLES20.glGetUniformLocation(program, "uWeave");
         uOrigin = GLES20.glGetUniformLocation(program, "uOrigin");
         uShift = GLES20.glGetUniformLocation(program, "uShift");
+        uBoost = GLES20.glGetUniformLocation(program, "uBoost");
+        uContrast = GLES20.glGetUniformLocation(program, "uContrast");
 
         float[] verts = {-1f, -1f, 1f, -1f, -1f, 1f, 1f, 1f};
         quad = ByteBuffer.allocateDirect(verts.length * 4).order(ByteOrder.nativeOrder()).asFloatBuffer();
@@ -178,6 +191,8 @@ final class GlassWeaver implements Stereo3DView.Weaver {
         float shiftX = (pw / 2f - viewLeft) - width / 2f;
         float shiftY = (ph / 2f - oy) - height / 2f;
         GLES20.glUniform2f(uShift, shiftX, shiftY);
+        GLES20.glUniform1f(uBoost, settings.boost);
+        GLES20.glUniform1f(uContrast, settings.contrast);
 
         GLES20.glUniform2f(uSize, width, height);
         GLES20.glUniform1f(uPitch, settings.pitch);

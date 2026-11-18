@@ -79,12 +79,15 @@ public final class GlassBackend implements PanelBackend {
         view.setWeaver(weaver);
 
         // 보면서 바로 맞추는 위상·추적 세기 조절 (오른쪽 위 "3D 조절").
-        tuner = new GlassTuner(a, settings.phase, settings.gap, Settings.MIN_GAP, Settings.MAX_GAP,
+        tuner = new GlassTuner(a, settings.phase, settings.gap, settings.boost, settings.contrast,
+                Settings.MIN_GAP, Settings.MAX_GAP,
                 new GlassTuner.Listener() {
-                    @Override public void onTune(float phase, float gap) {
+                    @Override public void onTune(float phase, float gap, float boost, float contrast) {
                         Settings s = settings;
                         s.phase = phase;
                         s.gap = gap;
+                        s.boost = boost;
+                        s.contrast = contrast;
                         s.save();
                         Stereo3DView v = gl;
                         if (v != null) v.requestRender();
@@ -129,7 +132,7 @@ public final class GlassBackend implements PanelBackend {
             settings = new Settings(activity);
             weaver.setSettings(settings);
             if (tuner != null) {
-                tuner.setValues(settings.phase, settings.gap);
+                tuner.setValues(settings.phase, settings.gap, settings.boost, settings.contrast);
                 if (tuner.getParent() == null) {
                     activity.addContentView(tuner, new ViewGroup.LayoutParams(
                             ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));

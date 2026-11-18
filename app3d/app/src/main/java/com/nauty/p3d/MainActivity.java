@@ -122,6 +122,18 @@ public class MainActivity extends Activity {
             @Override public boolean onLongClick(View v) { openUsb(true); return true; }
         });
         ((LinearLayout.LayoutParams) usb.getLayoutParams()).weight = 0.5f;
+        // S25 + SpatialGlass film: the lens line-up tool lives in the glass flavour; open it
+        // from here so nobody has to find its separate launcher icon.
+        if ("glass".equals(BuildConfig.FLAVOR_device)) {
+            Button setup = addButton(row, getString(R.string.glass_setup), new View.OnClickListener() {
+                @Override public void onClick(View v) {
+                    Intent i = new Intent();
+                    i.setClassName(MainActivity.this, "com.nauty.p3d.glass.GlassToolActivity");
+                    startActivity(i);
+                }
+            });
+            ((LinearLayout.LayoutParams) setup.getLayoutParams()).weight = 0.7f;
+        }
         root.addView(row);
 
         crumb = new TextView(this);

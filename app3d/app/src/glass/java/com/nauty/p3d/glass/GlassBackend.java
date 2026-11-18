@@ -93,6 +93,8 @@ public final class GlassBackend implements PanelBackend {
                         if (v != null) v.requestRender();
                     }
                 });
+        // No line-up button on this bar: it made the bar too big over the picture. The
+        // line-up lives in the 3D Fit tool (the "3D 맞추기" button on the list screen).
         // 화면에 붙이는 건 onResume 에서 한다: PlayerActivity 는 attach 뒤에
         // setContentView 를 하므로 지금 붙이면 그때 떨어져 나간다.
         tuner.setVisibility(threeD ? View.VISIBLE : View.GONE);

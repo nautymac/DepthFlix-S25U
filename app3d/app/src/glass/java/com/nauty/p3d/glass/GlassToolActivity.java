@@ -77,11 +77,15 @@ public class GlassToolActivity extends Activity {
 
     private View menu;
     private Button trackButton;
+    /** The hidden tuning tools (see buildMenu). */
+    private LinearLayout devRow;
+    private boolean devMode = false;
     private volatile EyeTracker.State lastEye;
     private int samples;
     /** This 3D 맞추기 session's taps: x, y, z (mm), phase, gap, trackY. */
     private final java.util.ArrayList<float[]> fitSamples = new java.util.ArrayList<>();
     private TextView phaseBadge;
+    private LinearLayout guidePanel;
     private final Runnable hideBadge = () -> phaseBadge.setVisibility(View.GONE);
     private final java.util.List<File> photos = new java.util.ArrayList<>();
     private int photoIndex;
@@ -121,7 +125,8 @@ public class GlassToolActivity extends Activity {
                 m.widthPixels, m.heightPixels, m.xdpi, pixelMm));
 
         settings = new Settings(this);
-        settings.mode = Settings.MODE_3D;
+        // Opens in 2D with a short guide on top; one tap switches to 3D (and hides the guide).
+        settings.mode = Settings.MODE_2D;
         renderer = new StereoRenderer(settings);
         renderer.setPixelMm(pixelMm);
         glView = new GLSurfaceView(this);
@@ -174,6 +179,12 @@ public class GlassToolActivity extends Activity {
                     return false;
                 }
                 if (e2.getPointerCount() >= 2) {
+                    // Pitch and slant are what the line-up sets; a stray two-finger drag
+                    // (trying to zoom, say) must not undo it. Only in the developer
+                    // recording view (step 3) do two fingers fine-tune them.
+                    if (settings.calStep != 2) {
+                        return true;
+                    }
                     // Two fingers, while looking at a real picture: left/right fine-tunes the
                     // lens period (whole width = 0.001 px), up/down the slant (whole height =
                     // 0.002). Same effect as calibration steps 1 and 2, but judged on content.
@@ -241,6 +252,28 @@ public class GlassToolActivity extends Activity {
                 ViewGroup.LayoutParams.WRAP_CONTENT, Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL);
         bp.bottomMargin = dp(8);
         root.addView(phaseBadge, bp);
+        // How-to shown over the 2D picture. Not clickable, so a tap still reaches the
+        // picture and switches to 3D. Text in 3D would split between the eyes, hence 2D only.
+        // The panel itself is not clickable, so a tap on its text still reaches the picture
+        // and switches to 3D; only the big button below takes its own taps.
+        guidePanel = new LinearLayout(this);
+        guidePanel.setOrientation(LinearLayout.VERTICAL);
+        guidePanel.setBackgroundColor(0xE6181818);
+        guidePanel.setPadding(dp(18), dp(14), dp(18), dp(14));
+        TextView guideView = label(getString(R.string.glass_guide), 14, false);
+        guideView.setLineSpacing(0f, 1.25f);
+        guidePanel.addView(guideView);
+        // The one thing a new user has to do: line up the lens (steps 1 and 2).
+        Button lineCal = button(getString(R.string.glass_btn_line_cal), v -> startCalibration(0));
+        lineCal.setTextSize(17);
+        lineCal.setBackgroundColor(0xFF1E9E52);
+        LinearLayout.LayoutParams lcp = new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, dp(56));
+        lcp.topMargin = dp(12);
+        guidePanel.addView(lineCal, lcp);
+        FrameLayout.LayoutParams gp = new FrameLayout.LayoutParams(dp(580),
+                ViewGroup.LayoutParams.WRAP_CONTENT, Gravity.CENTER);
+        root.addView(guidePanel, gp);
         setContentView(root);
 
         renderer.setImage(SampleImage.create());
@@ -252,17 +285,26 @@ public class GlassToolActivity extends Activity {
                 photoIndex = Math.max(0, Math.min(photos.size() - 1,
                         getSharedPreferences("stereo", MODE_PRIVATE).getInt("photoIndex", 0)));
                 loadPhoto(Uri.fromFile(photos.get(photoIndex)));
-            } else if (!settings.calibrated) {
-                startCalibration();
             }
+            // A first-time user sees the 2D guide with its big line-up button rather than
+            // being dropped straight into calibration.
+        }
+        if (getIntent() != null && getIntent().getBooleanExtra(EXTRA_LINE_CAL, false)) {
+            startCalibration(0);
         }
     }
+
+    /** Opened from DepthFlix ("3D 맞추기" button or the tuning bar): go straight to the line-up. */
+    static final String EXTRA_LINE_CAL = "line_cal";
 
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         setIntent(intent);
         openFromIntent(intent);
+        if (intent != null && intent.getBooleanExtra(EXTRA_LINE_CAL, false)) {
+            startCalibration(0);
+        }
     }
 
     /** Opens the photo a gallery "open with" or "share" handed us. */
@@ -368,19 +410,31 @@ public class GlassToolActivity extends Activity {
         settings.mode = settings.mode == Settings.MODE_3D ? Settings.MODE_2D : Settings.MODE_3D;
         renderer.requestRender();
         Toast.makeText(this, settings.mode == Settings.MODE_3D ? "3D" : getString(R.string.glass_mode_original), Toast.LENGTH_SHORT).show();
+        updateGuide();
     }
 
+    /**
+     * The long-press menu. Only what a user needs is on show; the tuning tools (position
+     * recording with auto fit, sample picture, tracking overlay) sit in a second row that
+     * appears only after holding "Close" for 3 seconds, so nobody stumbles into them.
+     */
     private View buildMenu() {
+        LinearLayout box = new LinearLayout(this);
+        box.setOrientation(LinearLayout.VERTICAL);
+        box.setBackgroundColor(0xE6202020);
+        box.setPadding(dp(6), dp(2), dp(6), dp(2));
         LinearLayout r = row();
-        r.setBackgroundColor(0xE6202020);
-        r.setPadding(dp(6), dp(2), dp(6), dp(2));
-        r.addView(button(getString(R.string.glass_btn_fit), v -> startCalibration(2)));
-        r.addView(button(getString(R.string.glass_btn_calibrate), v -> startCalibration()));
+        box.addView(r);
+        devRow = row();
+        devRow.setVisibility(View.GONE);
+        box.addView(devRow);
+
+        r.addView(button(getString(R.string.glass_btn_add), v -> pickPhoto()));
         prevButton = button(getString(R.string.glass_btn_prev), v -> stepPhoto(-1));
         r.addView(prevButton);
         nextButton = button(getString(R.string.glass_btn_next), v -> stepPhoto(1));
         r.addView(nextButton);
-        r.addView(button(getString(R.string.glass_btn_add), v -> pickPhoto()));
+        r.addView(button(getString(R.string.glass_btn_line_cal), v -> startCalibration(0)));
         r.addView(button(getString(R.string.glass_btn_restore), v -> {
             // Back to the values recorded in CALIBRATION.md (the Settings defaults).
             settings.resetCalibration();
@@ -389,9 +443,31 @@ public class GlassToolActivity extends Activity {
             Toast.makeText(this, fmt(R.string.glass_restored,
                     settings.phase, settings.gap, settings.pitch, settings.slant), Toast.LENGTH_LONG).show();
         }));
-        r.addView(button(getString(R.string.glass_btn_sample), v -> {
+        Button close = button(getString(R.string.glass_btn_close), v -> menu.setVisibility(View.GONE));
+        r.addView(close);
+        // Holding Close for 3 s shows the developer row (a normal tap still just closes).
+        final Runnable showDev = () -> {
+            devMode = true;
+            devRow.setVisibility(View.VISIBLE);
+            if (tabs[2] != null) tabs[2].setVisibility(View.VISIBLE);
+            Toast.makeText(this, R.string.glass_dev_on, Toast.LENGTH_SHORT).show();
+        };
+        close.setOnTouchListener((v, e) -> {
+            if (e.getActionMasked() == MotionEvent.ACTION_DOWN) {
+                repeat.postDelayed(showDev, 3000);
+            } else if (e.getActionMasked() == MotionEvent.ACTION_UP
+                    || e.getActionMasked() == MotionEvent.ACTION_CANCEL) {
+                repeat.removeCallbacks(showDev);
+            }
+            return false;   // let the click through
+        });
+
+        // Developer row.
+        devRow.addView(button(getString(R.string.glass_btn_fit), v -> startCalibration(2)));
+        devRow.addView(button(getString(R.string.glass_btn_sample), v -> {
             renderer.setImage(SampleImage.create());
             settings.mode = Settings.MODE_3D;
+            updateGuide();
             renderer.requestRender();
         }));
         trackButton = button("", v -> {
@@ -399,9 +475,8 @@ public class GlassToolActivity extends Activity {
             settings.save();
             refreshMenu();
         });
-        r.addView(trackButton);
-        r.addView(button(getString(R.string.glass_btn_close), v -> menu.setVisibility(View.GONE)));
-        return r;
+        devRow.addView(trackButton);
+        return box;
     }
 
     private void refreshMenu() {
@@ -449,6 +524,7 @@ public class GlassToolActivity extends Activity {
         recExit.setVisibility(compact ? View.VISIBLE : View.GONE);
         eyeView.setTextSize(compact ? 11 : 13);
         syncSeek();
+        updateGuide();
         renderer.requestRender();
     }
 
@@ -456,6 +532,12 @@ public class GlassToolActivity extends Activity {
         settings.calibrated = true;
         settings.save();
         int step = settings.calStep;
+        if (step == 1 && !devMode) {
+            // Both lines are done: that is all a user needs. Straight to the 3D picture.
+            exitCalibration();
+            Toast.makeText(this, R.string.glass_cal_done, Toast.LENGTH_LONG).show();
+            return;
+        }
         Toast.makeText(this, getString(R.string.glass_saved, getString(STEP_TABS[step])), Toast.LENGTH_SHORT).show();
         if (step < 2) {
             showStep(step + 1);
@@ -471,7 +553,15 @@ public class GlassToolActivity extends Activity {
         settings.mode = Settings.MODE_3D;
         calib.setVisibility(View.GONE);
         refreshMenu();
+        updateGuide();
         renderer.requestRender();
+    }
+
+    /** The how-to shows only on the plain 2D picture, never over 3D or calibration. */
+    private void updateGuide() {
+        if (guidePanel == null) return;
+        boolean show = settings.mode == Settings.MODE_2D && settings.calStep < 0;
+        guidePanel.setVisibility(show ? View.VISIBLE : View.GONE);
     }
 
     private float value() {
@@ -664,6 +754,8 @@ public class GlassToolActivity extends Activity {
             p.setMargins(dp(4), 0, dp(4), 0);
             tabRow.addView(tabs[i], p);
         }
+        // Step 3 (position recording) is a tuning tool: only with the developer menu on.
+        tabs[2].setVisibility(devMode ? View.VISIBLE : View.GONE);
         View gap = new View(this);
         tabRow.addView(gap, new LinearLayout.LayoutParams(dp(40), 1));
         Button saveButton = button(getString(R.string.glass_btn_save), v -> save());
@@ -917,7 +1009,6 @@ public class GlassToolActivity extends Activity {
                 }
                 Log.i(TAG, "photo " + shown.getWidth() + "x" + shown.getHeight());
                 renderer.setImage(shown);
-                settings.mode = Settings.MODE_3D;
                 renderer.requestRender();
             });
         }, "decode").start();

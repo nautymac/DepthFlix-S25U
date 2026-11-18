@@ -23,7 +23,7 @@
     <string name="glass_btn_prev">◀ 이전</string>
     <string name="glass_btn_next">다음 ▶</string>
     <string name="glass_btn_add">사진 추가</string>
-    <string name="glass_btn_restore">보정값 복원</string>
+    <string name="glass_btn_restore">처음 값으로</string>
     <string name="glass_restored">복원: 위상 %1$.4f · 추적 %2$.2f · 간격 %3$.5f · 기울기 %4$+.5f</string>
     <string name="glass_btn_sample">샘플 사진</string>
     <string name="glass_btn_close">닫기</string>
@@ -71,4 +71,11 @@
     <string name="glass_err_request">카메라 요청 실패: %1$s</string>
     <string name="glass_err_session_cfg">카메라 세션 구성 실패</string>
     <string name="glass_err_session">카메라 세션 실패: %1$s</string>
+
+    <!-- 2D 안내 (도구는 2D 로 열린다) -->
+    <string name="glass_guide">지금은 2D 화면입니다. 화면을 한 번 터치하면 3D로 바뀝니다.\n\n• 폰을 가로로 들고 앞카메라가 반드시 왼쪽에 오게 하세요. 반대 방향이면 3D가 되지 않습니다.\n• 왼쪽 위에 초록색 점(카메라 사용 표시)이 켜져 있어야 합니다. 눈 추적이 동작한다는 뜻입니다.\n• 화면에서 30~40 cm 떨어져서 보세요.\n• 처음이면 아래 버튼으로 가로·세로 줄부터 맞추세요. 그러면 3D가 금방 잡힙니다.\n• 3D에서 겹쳐 보이면 좌우로 끌기(위상), 고개를 옆으로 움직일 때 깨지면 위아래로 끌기(추적 세기).\n• 길게 누르기: 메뉴 (사진 추가 · ◀ ▶ · 줄 맞추기 · 처음 값으로)</string>
+    <string name="glass_btn_line_cal">가로·세로 줄 맞추기</string>
+    <string name="glass_cal_done">줄 맞추기 완료. 화면을 터치하면 3D와 2D가 바뀝니다.</string>
+    <string name="glass_dev_on">개발자 메뉴 표시</string>
+    <string name="glass_tune_line_cal">가로·세로 줄 맞추기</string>
 </resources>

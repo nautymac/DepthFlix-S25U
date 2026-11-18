@@ -26,7 +26,7 @@
     <string name="glass_btn_prev">◀ Prev</string>
     <string name="glass_btn_next">Next ▶</string>
     <string name="glass_btn_add">Add photos</string>
-    <string name="glass_btn_restore">Restore values</string>
+    <string name="glass_btn_restore">Reset to defaults</string>
     <string name="glass_restored">Restored: phase %1$.4f · tracking %2$.2f · pitch %3$.5f · slant %4$+.5f</string>
     <string name="glass_btn_sample">Sample photo</string>
     <string name="glass_btn_close">Close</string>
@@ -76,4 +76,11 @@
     <string name="glass_err_request">Camera request failed: %1$s</string>
     <string name="glass_err_session_cfg">Camera session setup failed</string>
     <string name="glass_err_session">Camera session failed: %1$s</string>
+
+    <!-- 2D guide (tool opens in 2D) -->
+    <string name="glass_guide">This is the 2D view. Tap the screen once to switch to 3D.\n\n• Hold the phone in landscape with the front camera ON THE LEFT. The other way round 3D does not work.\n• The green dot at the top left (camera in use) must be on: that is the eye tracking working.\n• Watch from 30–40 cm.\n• First time? Line up the lens with the button below (horizontal, then vertical lines). 3D locks in quickly after that.\n• In 3D, drag left/right if the picture looks doubled (phase); drag up/down if it breaks when you move your head sideways (tracking).\n• Long-press for the menu (add photos · ◀ ▶ · line-up · reset).</string>
+    <string name="glass_btn_line_cal">Line up the lens (horizontal · vertical)</string>
+    <string name="glass_cal_done">Line-up done. Tap the screen to switch between 3D and 2D.</string>
+    <string name="glass_dev_on">Developer tools shown</string>
+    <string name="glass_tune_line_cal">Line up the lens</string>
 </resources>

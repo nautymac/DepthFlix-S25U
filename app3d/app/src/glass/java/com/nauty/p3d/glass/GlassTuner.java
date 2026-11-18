@@ -69,6 +69,12 @@ final class GlassTuner extends FrameLayout {
 
     GlassTuner(Context c, float phase, float gap, float boost, float contrast,
                float minGap, float maxGap, Listener listener) {
+        this(c, phase, gap, boost, contrast, minGap, maxGap, listener, null);
+    }
+
+    /** @param lineCal when not null, a button at the bottom of the bar that runs it (opens the lens line-up). */
+    GlassTuner(Context c, float phase, float gap, float boost, float contrast,
+               float minGap, float maxGap, Listener listener, final Runnable lineCal) {
         super(c);
         this.listener = listener;
         names = new String[]{c.getString(com.nauty.p3d.R.string.glass_tune_phase), c.getString(com.nauty.p3d.R.string.glass_tune_track),
@@ -102,6 +108,19 @@ final class GlassTuner extends FrameLayout {
             text[i] = label();
             seek[i] = seekBar(i);
             panel.addView(row(i));
+        }
+        if (lineCal != null) {
+            Button b = new Button(c);
+            b.setText(com.nauty.p3d.R.string.glass_tune_line_cal);
+            b.setAllCaps(false);
+            b.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
+            b.setTextColor(Color.WHITE);
+            b.setBackground(round(0xFF1E9E52));
+            b.setOnClickListener(v -> lineCal.run());
+            LinearLayout.LayoutParams bl = new LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT, dp(36));
+            bl.topMargin = dp(4);
+            panel.addView(b, bl);
         }
 
         LayoutParams pl = new LayoutParams(dp(360), ViewGroup.LayoutParams.WRAP_CONTENT,

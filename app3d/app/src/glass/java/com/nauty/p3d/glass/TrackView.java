@@ -84,19 +84,20 @@ final class TrackView extends View {
         String l2;
         String l3;
         if (s == null) {
-            l1 = "카메라 시작 중…";
+            l1 = getContext().getString(com.nauty.p3d.R.string.glass_tv_starting);
             l2 = "";
             l3 = "";
         } else if (s.error != null) {
-            l1 = "추적 오류";
+            l1 = getContext().getString(com.nauty.p3d.R.string.glass_tv_error);
             l2 = s.error;
             l3 = "";
         } else {
-            l1 = String.format(Locale.US, "추적 %s · %s · %.0f fps",
-                    tracking ? "켬" : "끔",
-                    s.faceMode == 3 ? "홍채 추적" : s.faceMode == 2 ? "눈 인식" : "얼굴 상자", s.fps);
-            l2 = s.found ? "얼굴 인식됨" : (s.valid ? "얼굴 없음 (마지막 위치 유지)" : "얼굴 없음");
-            l3 = s.valid ? String.format(Locale.US, "X %+.0f  Y %+.0f  거리 %.0f mm", s.xMm, s.yMm, s.zMm) : "";
+            l1 = String.format(Locale.US, getContext().getString(com.nauty.p3d.R.string.glass_tv_status),
+                    getContext().getString(tracking ? com.nauty.p3d.R.string.glass_on : com.nauty.p3d.R.string.glass_off),
+                    getContext().getString(s.faceMode == 3 ? com.nauty.p3d.R.string.glass_tv_iris
+                            : s.faceMode == 2 ? com.nauty.p3d.R.string.glass_tv_eyes : com.nauty.p3d.R.string.glass_tv_box), s.fps);
+            l2 = getContext().getString(s.found ? com.nauty.p3d.R.string.glass_tv_found : (s.valid ? com.nauty.p3d.R.string.glass_tv_lost_keep : com.nauty.p3d.R.string.glass_tv_lost));
+            l3 = s.valid ? String.format(Locale.US, getContext().getString(com.nauty.p3d.R.string.glass_tv_pos), s.xMm, s.yMm, s.zMm) : "";
         }
         c.drawText(l1, x, y, text);
         c.drawText(l2, x, y + 18 * density, text);

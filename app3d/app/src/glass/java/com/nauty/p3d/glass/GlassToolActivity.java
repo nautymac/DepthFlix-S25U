@@ -1,5 +1,7 @@
 package com.nauty.p3d.glass;
 
+import com.nauty.p3d.R;
+
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -54,16 +56,8 @@ public class GlassToolActivity extends Activity {
     private static final int REQ_CAMERA = 2;
     private static final int MAX_IMAGE_WIDTH = 8192;
 
-    private static final String[] STEP_TABS = {"1: 가로", "2: 세로", "3: 이미지"};
-    private static final String[] STEP_HINTS = {
-            "화면에서 약 40cm 떨어져서 보세요.\n"
-                    + "빨간 줄무늬가 가운데 빨간 가로선과 나란해지도록 아래 막대나 −/+로 조정한 뒤, "
-                    + "'저장'을 누르고 2단계로 넘어가세요.",
-            "빨간 줄무늬가 가운데 빨간 세로선과 나란해지도록 조정한 뒤, "
-                    + "'저장'을 누르고 3단계로 넘어가세요.",
-            "잘 보일 때 사진을 탭하면 그 순간의 눈 위치가 기록됩니다.\n"
-                    + "여러 위치(가운데·왼쪽·오른쪽·가까이·멀리)에서, 필요하면 −/+로 위상을 맞춘 뒤 탭하세요.",
-    };
+    private static final int[] STEP_TABS = {R.string.glass_step_1, R.string.glass_step_2, R.string.glass_step_3};
+    private static final int[] STEP_HINTS = {R.string.glass_hint_1, R.string.glass_hint_2, R.string.glass_hint_3};
     /** Slider range and fine −/+ step for each calibration step. */
     private static final float[][] STEP_RANGE = {
             {1.30f, 1.75f, 0.0001f},   // pitch, px (Glass: 1.51217)
@@ -356,8 +350,7 @@ public class GlassToolActivity extends Activity {
 
     /** Shows pitch and slant for a moment while they are being dragged with two fingers. */
     private void showLensBadge() {
-        phaseBadge.setText(String.format(Locale.US,
-                "간격 %.5f (두 손가락 좌우)   ·   기울기 %+.5f (두 손가락 위아래)", settings.pitch, settings.slant));
+        phaseBadge.setText(fmt(R.string.glass_lens_badge, settings.pitch, settings.slant));
         phaseBadge.setVisibility(View.VISIBLE);
         repeat.removeCallbacks(hideBadge);
         repeat.postDelayed(hideBadge, 1500);
@@ -365,8 +358,7 @@ public class GlassToolActivity extends Activity {
 
     /** Shows the phase at the bottom for a moment while it is being dragged. */
     private void showPhaseBadge() {
-        phaseBadge.setText(String.format(Locale.US,
-                "위상 %.3f (좌우로 끌기)   ·   추적 세기 %.2f (위아래로 끌기)", settings.phase, settings.gap));
+        phaseBadge.setText(fmt(R.string.glass_phase_badge, settings.phase, settings.gap));
         phaseBadge.setVisibility(View.VISIBLE);
         repeat.removeCallbacks(hideBadge);
         repeat.postDelayed(hideBadge, 1500);
@@ -375,29 +367,29 @@ public class GlassToolActivity extends Activity {
     private void toggle3D() {
         settings.mode = settings.mode == Settings.MODE_3D ? Settings.MODE_2D : Settings.MODE_3D;
         renderer.requestRender();
-        Toast.makeText(this, settings.mode == Settings.MODE_3D ? "3D" : "원본", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, settings.mode == Settings.MODE_3D ? "3D" : getString(R.string.glass_mode_original), Toast.LENGTH_SHORT).show();
     }
 
     private View buildMenu() {
         LinearLayout r = row();
         r.setBackgroundColor(0xE6202020);
         r.setPadding(dp(6), dp(2), dp(6), dp(2));
-        r.addView(button("3D 맞추기", v -> startCalibration(2)));
-        r.addView(button("보정", v -> startCalibration()));
-        prevButton = button("◀ 이전", v -> stepPhoto(-1));
+        r.addView(button(getString(R.string.glass_btn_fit), v -> startCalibration(2)));
+        r.addView(button(getString(R.string.glass_btn_calibrate), v -> startCalibration()));
+        prevButton = button(getString(R.string.glass_btn_prev), v -> stepPhoto(-1));
         r.addView(prevButton);
-        nextButton = button("다음 ▶", v -> stepPhoto(1));
+        nextButton = button(getString(R.string.glass_btn_next), v -> stepPhoto(1));
         r.addView(nextButton);
-        r.addView(button("사진 추가", v -> pickPhoto()));
-        r.addView(button("보정값 복원", v -> {
+        r.addView(button(getString(R.string.glass_btn_add), v -> pickPhoto()));
+        r.addView(button(getString(R.string.glass_btn_restore), v -> {
             // Back to the values recorded in CALIBRATION.md (the Settings defaults).
             settings.resetCalibration();
             settings.save();
             renderer.requestRender();
-            Toast.makeText(this, String.format(Locale.US, "복원: 위상 %.4f · 추적 %.2f · 간격 %.5f · 기울기 %+.5f",
+            Toast.makeText(this, fmt(R.string.glass_restored,
                     settings.phase, settings.gap, settings.pitch, settings.slant), Toast.LENGTH_LONG).show();
         }));
-        r.addView(button("샘플 사진", v -> {
+        r.addView(button(getString(R.string.glass_btn_sample), v -> {
             renderer.setImage(SampleImage.create());
             settings.mode = Settings.MODE_3D;
             renderer.requestRender();
@@ -408,7 +400,7 @@ public class GlassToolActivity extends Activity {
             refreshMenu();
         });
         r.addView(trackButton);
-        r.addView(button("닫기", v -> menu.setVisibility(View.GONE)));
+        r.addView(button(getString(R.string.glass_btn_close), v -> menu.setVisibility(View.GONE)));
         return r;
     }
 
@@ -416,7 +408,7 @@ public class GlassToolActivity extends Activity {
         int nav = photos.size() > 1 ? View.VISIBLE : View.GONE;
         prevButton.setVisibility(nav);
         nextButton.setVisibility(nav);
-        trackButton.setText(settings.showTrack ? "추적 표시: 켬" : "추적 표시: 끔");
+        trackButton.setText(getString(settings.showTrack ? R.string.glass_track_on : R.string.glass_track_off));
         trackView.setVisibility(settings.showTrack && settings.calStep < 0 ? View.VISIBLE : View.GONE);
     }
 
@@ -464,7 +456,7 @@ public class GlassToolActivity extends Activity {
         settings.calibrated = true;
         settings.save();
         int step = settings.calStep;
-        Toast.makeText(this, STEP_TABS[step] + " 저장됨", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, getString(R.string.glass_saved, getString(STEP_TABS[step])), Toast.LENGTH_SHORT).show();
         if (step < 2) {
             showStep(step + 1);
         }
@@ -519,22 +511,22 @@ public class GlassToolActivity extends Activity {
     }
 
     private void showValue() {
-        String[] fmt = {"간격 %.5f", "기울기 %+.5f", "위상 %.2f"};
-        valueView.setText(String.format(Locale.US, fmt[settings.calStep], value()));
+        int[] ids = {R.string.glass_val_pitch, R.string.glass_val_slant, R.string.glass_val_phase};
+        valueView.setText(fmt(ids[settings.calStep], value()));
     }
 
     private void showEye(EyeTracker.State s) {
         String rec = settings.calStep == 2
-                ? String.format(Locale.US, "  ·  위상 %.2f  ·  좌우로 끌어 가장 선명하게 → 탭  ·  기록 %d개", settings.phase, samples)
+                ? fmt(R.string.glass_rec_line, settings.phase, samples)
                 : "";
         if (s.error != null) {
-            eyeView.setText("눈: 카메라 오류" + rec);
+            eyeView.setText(getString(R.string.glass_eye_error) + rec);
         } else if (s.found && settings.calStep == 2) {
-            eyeView.setText(String.format(Locale.US, "X %+.0f  Y %+.0f  거리 %.0f%s", s.xMm, s.yMm, s.zMm, rec));
+            eyeView.setText(fmt(R.string.glass_eye_pos, s.xMm, s.yMm, s.zMm, rec));
         } else if (s.found) {
-            eyeView.setText(String.format(Locale.US, "눈: %.0f MM", s.zMm));
+            eyeView.setText(fmt(R.string.glass_eye_dist, s.zMm));
         } else {
-            eyeView.setText("눈: 인식 안 됨" + rec);
+            eyeView.setText(getString(R.string.glass_eye_none) + rec);
         }
     }
 
@@ -546,7 +538,7 @@ public class GlassToolActivity extends Activity {
     private void recordSample() {
         EyeTracker.State s = lastEye;
         if (s == null || !s.found) {
-            Toast.makeText(this, "얼굴이 인식되지 않아 기록하지 않았습니다", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.glass_no_face, Toast.LENGTH_SHORT).show();
             return;
         }
         samples++;
@@ -561,7 +553,7 @@ public class GlassToolActivity extends Activity {
             Log.w(TAG, "sample write failed", e);
         }
         fitSamples.add(new float[] {s.xMm, s.yMm, s.zMm, settings.phase, settings.gap, settings.trackY});
-        Toast.makeText(this, String.format(Locale.US, "기록 %d: X %+.0f Y %+.0f 거리 %.0f mm · 위상 %.2f",
+        Toast.makeText(this, fmt(R.string.glass_recorded,
                 samples, s.xMm, s.yMm, s.zMm, settings.phase), Toast.LENGTH_SHORT).show();
         showEye(s);
     }
@@ -588,8 +580,7 @@ public class GlassToolActivity extends Activity {
             maxX = Math.max(maxX, f[0]);
         }
         if (n < 2 || maxX - minX < 30f) {
-            Toast.makeText(this, "자동 맞춤: 좌우로 30 mm 이상 떨어진 위치 두 곳 이상 기록해야 계산합니다",
-                    Toast.LENGTH_LONG).show();
+            Toast.makeText(this, R.string.glass_fit_need, Toast.LENGTH_LONG).show();
             return;
         }
         boolean phaseMoved = false;
@@ -600,9 +591,7 @@ public class GlassToolActivity extends Activity {
         if (!phaseMoved) {
             // Every tap kept the same setting: the current values already look right at all
             // of these positions, so there is nothing to change (and nothing to fit).
-            Toast.makeText(this, String.format(Locale.US,
-                    "자동 맞춤: %d곳 모두 지금 값(위상 %.3f, 추적 세기 %.2f)으로 기록 → 값 유지",
-                    n, settings.phase, settings.gap), Toast.LENGTH_LONG).show();
+            Toast.makeText(this, fmt(R.string.glass_fit_same, n, settings.phase, settings.gap), Toast.LENGTH_LONG).show();
             return;
         }
         double[] w = new double[n];
@@ -643,9 +632,7 @@ public class GlassToolActivity extends Activity {
         float c = (float) (bestC % 1.0);
         settings.gap = (float) bestG;
         settings.phase = c < 0 ? c + 1f : c;
-        String msg = String.format(Locale.US,
-                "자동 맞춤 (%d곳): 추적 세기 %.2f → %.2f, 위상 %.3f → %.3f, 오차 %.3f",
-                n, oldGap, settings.gap, oldPhase, settings.phase, rms);
+        String msg = fmt(R.string.glass_fit_result, n, oldGap, settings.gap, oldPhase, settings.phase, rms);
         Log.i("StereoSample", msg);
         Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
     }
@@ -671,7 +658,7 @@ public class GlassToolActivity extends Activity {
         tabRow.setPadding(dp(8), dp(4), dp(8), dp(4));
         for (int i = 0; i < 3; i++) {
             final int step = i;
-            tabs[i] = button(STEP_TABS[i], v -> showStep(step));
+            tabs[i] = button(getString(STEP_TABS[i]), v -> showStep(step));
             tabs[i].setTextSize(15);
             LinearLayout.LayoutParams p = new LinearLayout.LayoutParams(dp(120), dp(44));
             p.setMargins(dp(4), 0, dp(4), 0);
@@ -679,13 +666,13 @@ public class GlassToolActivity extends Activity {
         }
         View gap = new View(this);
         tabRow.addView(gap, new LinearLayout.LayoutParams(dp(40), 1));
-        Button saveButton = button("저장", v -> save());
+        Button saveButton = button(getString(R.string.glass_btn_save), v -> save());
         saveButton.setTextSize(15);
         saveButton.setBackgroundColor(0xFF1E9E52);
         LinearLayout.LayoutParams sp = new LinearLayout.LayoutParams(dp(100), dp(44));
         sp.setMargins(dp(4), 0, dp(4), 0);
         tabRow.addView(saveButton, sp);
-        Button exitButton = button("나가기", v -> exitCalibration());
+        Button exitButton = button(getString(R.string.glass_btn_exit), v -> exitCalibration());
         exitButton.setTextSize(15);
         exitButton.setBackgroundColor(0xFF3A3A3A);
         tabRow.addView(exitButton, new LinearLayout.LayoutParams(dp(100), dp(44)));
@@ -694,10 +681,10 @@ public class GlassToolActivity extends Activity {
         // Eye readout, plus a small exit used in the compact recording view (step 3).
         LinearLayout eyeRow = row();
         eyeRow.setBackgroundColor(0xE6181818);
-        eyeView = label("눈: 인식 안 됨", 13, true);
+        eyeView = label(getString(R.string.glass_eye_none), 13, true);
         eyeView.setPadding(dp(10), dp(2), dp(10), dp(2));
         eyeRow.addView(eyeView);
-        recExit = button("끝", v -> exitCalibration());
+        recExit = button(getString(R.string.glass_btn_done), v -> exitCalibration());
         recExit.setTextSize(11);
         recExit.setMinimumHeight(dp(28));
         eyeRow.addView(recExit, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, dp(30)));
@@ -839,7 +826,7 @@ public class GlassToolActivity extends Activity {
             }
             runOnUiThread(() -> {
                 if (added.isEmpty()) {
-                    Toast.makeText(this, "사진을 가져오지 못했습니다", Toast.LENGTH_LONG).show();
+                    Toast.makeText(this, R.string.glass_photo_import_failed, Toast.LENGTH_LONG).show();
                     return;
                 }
                 photos.clear();
@@ -848,8 +835,7 @@ public class GlassToolActivity extends Activity {
                 rememberIndex();
                 loadPhoto(Uri.fromFile(photos.get(photoIndex)));
                 refreshMenu();
-                Toast.makeText(this, "사진 " + added.size() + "장 추가 · 보관 " + photos.size()
-                        + "장 (길게 눌러 ◀ ▶)", Toast.LENGTH_LONG).show();
+                Toast.makeText(this, getString(R.string.glass_photos_added, added.size(), photos.size()), Toast.LENGTH_LONG).show();
             });
         }, "import").start();
     }
@@ -926,7 +912,7 @@ public class GlassToolActivity extends Activity {
             Bitmap shown = bmp;
             runOnUiThread(() -> {
                 if (shown == null) {
-                    Toast.makeText(this, "사진을 열 수 없습니다", Toast.LENGTH_LONG).show();
+                    Toast.makeText(this, R.string.glass_photo_open_failed, Toast.LENGTH_LONG).show();
                     return;
                 }
                 Log.i(TAG, "photo " + shown.getWidth() + "x" + shown.getHeight());
@@ -1003,6 +989,11 @@ public class GlassToolActivity extends Activity {
         r.setOrientation(LinearLayout.HORIZONTAL);
         r.setGravity(Gravity.CENTER_VERTICAL);
         return r;
+    }
+
+    /** A string resource formatted with dots for decimals, whatever the phone's language. */
+    private String fmt(int id, Object... args) {
+        return String.format(Locale.US, getString(id), args);
     }
 
     private Button button(String text, View.OnClickListener l) {

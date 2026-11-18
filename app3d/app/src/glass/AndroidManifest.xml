@@ -6,7 +6,7 @@
              SBS 사진을 3D 로 본다. 플레이어가 같은 값을 쓴다. 런처에 따로 아이콘을 둔다. -->
         <activity
             android:name=".glass.GlassToolActivity"
-            android:label="DepthFlix 3D 맞추기"
+            android:label="@string/glass_tool_label"
             android:exported="true"
             android:screenOrientation="landscape"
             android:launchMode="singleTop"

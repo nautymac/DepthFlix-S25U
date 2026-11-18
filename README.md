@@ -1,213 +1,112 @@
-# DepthFlix — Leia 라이트필드 패널용 3D 영상·사진 뷰어
+# DepthFlix — S25 Ultra
 
-*한국어 · [English](README.en.md)*
+**3D video and photo player for the Galaxy S25 Ultra with a SpatialGlass 3D film**
+**갤럭시 S25 Ultra + SpatialGlass 3D 필름용 3D 영상·사진 플레이어**
 
-[Leia Lume Pad 2](https://www.leiainc.com/)(LPD-20W)와 **RedMagic Tablet 3D
-Explorer Edition**(NP02J, 코드네임 K68) — 8방향 회절 라이트필드 + 얼굴추적을 쓰는
-두 기기에서 **3D 영상과 3D 사진을 제대로 보기 위해** 만든 뷰어다. 기기별로 빌드
-플레이버가 나뉘어 있다(`lumepad`, `redmagic`) — CNSDK 코어 버전이 달라(Lume Pad
-0.6.200, RedMagic 0.10.x) 연결부를 따로 준비해야 한다.
-
-기기에 들어 있는 LeiaPlayer 로도 볼 수는 있지만, 이쪽은 다음이 다르다.
-
-- **SBS/TB 배치를 픽셀과 해상도로 직접 판별한다** — 파일 이름을 믿지 않는다
-- **수렴을 실제로 재서 맞춘다** — 게임에서 뽑은 SBS 는 만든 화면 기준으로 좌우가
-  통째로 어긋나 있어서, 태블릿에 그대로 올리면 두 눈이 모으지 못한다
-- **자막을 좌·우 뷰에 각각 그린다** — 화면 위에 2D 로 얹으면 위빙을 거치며 겹쳐 보인다
-- **2D 영상은 Leia 자신의 신경망 변환기로 3D 화한다** — 기기 안에 이미 있는 것을 쓴다
-- **DTS·AC3 를 소리 나게 재생한다** (FFmpeg 오디오 확장)
+*[한국어](#한국어) · [English](#english)*
 
 ---
 
-## 설치
+## 한국어
 
-[Releases](../../releases) 에서 기기에 맞는 APK 를 받아 설치하면 된다.
-**그 밖에 할 일이 없다** — adb 설정도, 루팅도 필요 없다.
+Leia 태블릿용 [DepthFlix](https://github.com/nautymac/DepthFlix)의 **갤럭시 S25 Ultra + SpatialGlass 3D 필름** 버전입니다. SBS·TB 3D 영상과 사진, 그리고 일반 2D 영상을 폰에서 안경 없이 3D로 봅니다.
 
-| APK | 기기 | 패키지 |
-|---|---|---|
-| `DepthFlix-LumePad2-*.apk` | Lume Pad 2 (LPD-20W) | `com.nauty.p3d` |
-| `DepthFlix-RedMagic-*.apk` | RedMagic Tablet 3D Explorer Edition (NP02J) | `com.nauty.p3d.redmagic` |
+이 필름은 **렌즈일 뿐**이라 폰에 3D 엔진이 없습니다. 그래서 앱이 직접 합니다.
 
-패키지가 달라 한 기기에 둘 다 설치돼 있어도 문제없다(테스트 편의용).
+- **위빙**: 두 눈 그림을 화소마다 필름 렌즈에 맞춰 섞습니다. 색(빨강·초록·파랑)마다 따로 측정한 섞기 곡선을 씁니다.
+- **눈 추적**: 앞카메라로 두 눈의 홍채를 초당 약 60번 찾아, 머리를 움직여도 3D가 유지되게 위빙을 옮깁니다. 기기 안에서만 처리합니다.
 
-| 필요한 것 | |
+### 기능
+
+| 기능 | 설명 |
 |---|---|
-| 권한 | 저장소 읽기 하나. 처음 실행할 때 앱이 물어본다 |
-| 얼굴추적 | 기기의 Leia 서비스가 한다. 이 앱은 카메라 권한 없이 동작한다 |
-| 재생 중 밝기 강제 | Lume Pad 2는 켬(3D 모드가 어두워지는 문제 때문), RedMagic은 끔(적응형 밝기로 충분함이 실기로 확인됨) — `R.bool.force_max_brightness`로 기기별 값 |
+| **3D 영상·사진** | SBS/TB(half·full)를 화소로 판별해 3D로 보여 줍니다. 2D 영상은 시차를 만들어 3D로 봅니다. |
+| **3D 조절 바** | 재생 중 오른쪽 위 **3D 조절** → 위상·추적 세기·밝기·대비를 보면서 맞춥니다. 값은 저장됩니다. |
+| **밝기·대비 보정** | 필름 3D는 각 눈에 화소 일부만 가서 어둡습니다. 기본으로 밝기 1.4, 대비 1.15로 올립니다(조절 가능). |
+| **정중앙 배치** | 카메라 구멍과 상관없이 그림을 화면 정중앙에 같은 여백으로 놓습니다. |
+| **USB 드라이브** | 목록 위 **USB** 버튼. 처음 한 번 드라이브를 허락하면 폴더·영상·사진을 바로 둘러보고 3D로 엽니다. 버튼을 길게 누르면 다른 드라이브를 고릅니다. |
+| **자막** | 영상 옆의 .srt/.smi 등을 자동으로 붙입니다(USB 포함, 한국어 우선). 없으면 영상 안의 자막을 자동으로 켭니다. |
+| **3D 맞추기 도구** | 런처의 **DepthFlix 3D 맞추기**: 필름 렌즈 값을 맞추고(가로·세로·이미지 3단계) SBS 사진을 3D로 봅니다. 플레이어와 같은 값을 씁니다. |
+| **그 밖에** | SMB·DLNA·URL 재생, DTS·AC3 소리 재생(FFmpeg), 이어 보기 등 DepthFlix 기능 그대로. |
 
----
+### 설치
 
-## 쓰는 법
+1. [Releases](../../releases)에서 `DepthFlix-S25Ultra-*.apk`를 받아 설치합니다.
+2. 처음 실행할 때 **저장소** 권한을, 3D를 처음 볼 때 **카메라** 권한(눈 추적용)을 허용합니다.
 
-### 목록
+패키지가 `com.nauty.p3d.glass`라 다른 DepthFlix와 함께 설치할 수 있습니다.
 
-앱을 열면 **영상 폴더** 목록이 나온다. 폴더를 누르면 그 안의 파일이 보인다.
+### 잘 보는 법
 
-| 조작 | |
-|---|---|
-| **사진 보기 / 영상 보기** | 목록을 사진과 영상 사이에서 바꾼다 |
-| 폴더를 **길게 누르기** | 그 폴더를 목록 맨 위에 고정한다 (★). 다시 누르면 해제 |
-| **뒤로** | 파일 목록 → 폴더 목록 |
-| **URL/스트리밍 열기** | `http(s)` / `m3u8` / `mpd` / `rtsp` 주소를 직접 연다 |
+- **거리 30~40 cm**에서 보세요. 20 cm처럼 너무 가까우면 2D가 됩니다.
+- **앞카메라가 왼쪽**에 오게 가로로 듭니다.
+- 겹치거나 뒤집혀 보이면 **3D 조절 › 위상**을 천천히 움직여 가장 선명한 곳에 둡니다. 머리를 옆으로 옮길 때 깨지면 **추적**(1.5~2.5)을 조절합니다.
+- 처음 쓰는 폰·필름이면 **DepthFlix 3D 맞추기 › 보정**에서 가로·세로 줄무늬를 먼저 맞추세요.
 
-영상 이름 옆의 `[좌우 SBS (full)]` 같은 표시는 **이름에서 추측한** 배치다.
-실제 배치는 열면서 픽셀로 다시 판별한다.
+### 빌드
 
-### 재생 화면
-
-화면을 한 번 누르면 아래 재생바가 나타나고 사라진다.
-
-| 버튼 | 영상 | 사진 |
-|---|---|---|
-| ◀◀ ▶▶ | 짧게 30초, 길게 5분 이동 | 이전/다음 장, 길게 10장 |
-| ❚❚ | 재생/일시정지 | — |
-| 시간 표시 | 위치 / 길이 | 몇 번째 / 전체 |
-| ⚙ 설정 | 오른쪽 설정판 | 같음 |
-
-사진은 **지금 들어간 폴더 안에서만** 넘어간다.
-
-### 설정판
-
-**3D**
-
-| | |
-|---|---|
-| **소스** | 배치를 직접 고른다 (2D / 좌우 half·full / 상하 half·full). 고르면 그 파일에 기억된다 |
-| **출력** | 3D · 2D · SBS 확인 |
-| **좌우반전** | 깊이가 반대로 보일 때 |
-| **↺ 자동 판별로 되돌리기** | 잘못 고른 것을 지우고 다시 판별한다 |
-| **화면 비** | 자동 · 16:9 · 2.40:1 · 1.85:1 · 4:3 · 꽉 채우기 |
-| **화면 비 미세조정** | 1.00 ~ 3.00. 임의 비율로 눌러 담은 파일용 |
-| **깊이** | 2D→3D 변환의 시차 강도 |
-| **수렴 보정** | 아래 설명 |
-
-**자막**
-
-자막 파일(`.srt` / `.smi`)이 영상 옆에 있으면 자동으로 읽는다. 없으면
-**자막 선택** 으로 영상 폴더 · `Movies` · `Download` · `Subtitles` 를 뒤져 고른다.
-크기 · 위치 · 깊이(앞으로 튀어나오는 정도)를 조절할 수 있고, 값은 기억된다.
-
----
-
-## 수렴 보정 — 이 앱을 만든 이유의 절반
-
-게임에서 뽑은 SBS 스크린샷·영상은 **만들 때 쓰던 모니터와 그때의 convergence
-설정이 픽셀 수로 굳어** 있다. 같은 그림을 태블릿 눈 상자에 맞춰 늘리거나 줄이면
-시차도 같은 비율로 변한다.
-
-기기의 HelixMod 스크린샷 36장을 재봤더니 좌우 절반이 **통째로** 어긋나 있었다 —
-1920px 눈 기준으로 20px 부터 224px(눈 폭의 11.7%)까지. 정작 장면 자체의 깊이 폭은
-28~184px 로 그보다 훨씬 작다. 24인치 모니터에서 만든 값을 10인치 태블릿에 그대로
-올리니 두 눈이 모을 수 있는 한계를 넘는 것이다.
-
-- **수렴 보정** 슬라이더 — 화면에 나가는 시차를 픽셀 단위로 밀고 당긴다.
-  양수면 장면이 화면 뒤로, 음수면 앞으로 온다. 파일마다 기억된다.
-- **수렴 자동 (장면 중심을 화면에)** — 지금 그림의 시차를 실제로 재서
-  장면의 중심을 화면 평면에 놓는다. 깊이 폭의 절반은 앞, 절반은 뒤로 갈려서
-  두 눈이 모으기 편한 범위에 들어온다. 측정한 시차 범위는 설정판에 같이 표시된다.
-
-눈금이 **화면 픽셀**이라 소스 해상도가 3344 든 5120 이든 같은 값이 같은 뜻이다.
-
----
-
-## 어떻게 동작하나
+`glassGithub` 플레이버입니다(`app3d/app/src/glass/`).
 
 ```
-영상/사진 ─▶ 디코더 ─▶ OES 텍스처 ─▶ 우리 GL
-                                       │  레터박스 · 화면비 · SBS/TB 크롭
-                                       │  수렴 보정 · 자막(좌우 각각)
-                                       ▼
-                       2D 소스 ──▶ Leia 신경망 변환기 ──┐
-                       3D 소스 ──▶ SBS 프레임 ─────────┴─▶ CNSDK 위빙 ─▶ 화면
-```
-
-마지막 단계(위빙)는 우리가 하지 않는다. 이 패널은 8방향 회절이고 얼굴 위치에 따라
-매 프레임 짜임이 달라져서, 고정 패턴으로는 3D 가 서지 않기 때문이다. CNSDK 에 넘긴다.
-
-**2D→3D 는 Leia 자신의 신경망 변환기를 쓴다.** 기기의 시스템 앱
-(`com.leiainc.media.service`) 이 모델과 SNPE·Hexagon 실행기를 들고 있어서, 그것을
-우리 프로세스로 불러들여 쓴다. 우리가 재배포하는 Leia 바이너리는 없다.
-같은 프레임으로 진짜 스테레오와 비교해 봤을 때 우리가 쓰던 시어 방식보다 확실히 낫다.
-
-자세한 기록은 [`LUMEPAD2-PORT.md`](LUMEPAD2-PORT.md) 에 있다 — 잘못 짚었던
-진단까지 그대로 남겨뒀다.
-
-**다른 앱에 3D 를 붙이려면** [`MOONLIGHT-LUMEPAD2.md`](MOONLIGHT-LUMEPAD2.md) 를 보라.
-Moonlight 을 예로 들어, CNSDK 를 앱에 넣는 법과 실기에서 물린 함정 넷을 정리했다.
-이 패널은 고정 패턴이 아니라서 밖에서 남의 화면을 3D 로 바꿔줄 방법이 없다 —
-그리는 앱 자신이 위빙을 해야 한다.
-
----
-
-## 직접 빌드하려면
-
-CNSDK 는 Leia 의 것이라 재배포할 수 없어서 **저장소에 들어 있지 않다.**
-본인 기기에서 꺼내야 하고, 두 기기의 CNSDK 코어 버전이 달라 연결부도 따로
-준비해야 한다.
-
-```
-app3d/app/libs/lumepad/leia-cnsdk.jar                          (Lume Pad 2, CNSDK 0.6.200)
-app3d/app/src/lumepad/jniLibs/arm64-v8a/libleiaSDK.so
-app3d/app/src/lumepad/jniLibs/arm64-v8a/libleiaspdlog.so
-app3d/app/src/lumepad/assets/cnsdk.version
-
-app3d/app/libs/redmagic/leia-cnsdk.jar                         (RedMagic, CNSDK 0.10.x)
-app3d/app/src/redmagic/jniLibs/arm64-v8a/libleiaSDK-jni.so
-app3d/app/src/redmagic/jniLibs/arm64-v8a/libleiaCore-loader.so
-app3d/app/src/redmagic/assets/cnsdk.version
-```
-
-Lume Pad 2 쪽은 기기에 설치된 CNSDK 사용 앱(예: 정식 Moonlight3D)의 APK에서
-`lib/arm64-v8a/libleiaSDK.so`·`libleiaspdlog.so`와 `assets/cnsdk.version`을
-꺼내고, `classes*.dex`를 jar로 만든다(dex2jar 등). RedMagic 쪽은 기기 자체의
-Leia 시스템 앱에서 같은 방식으로 꺼낸다 — 두 연결부는 서로 바꿔 쓸 수 없다
-(`LeiaSDK.Delegate`가 인터페이스에서 추상 클래스로 바뀌는 등 API 자체가 다르다).
-
-그 다음 평소대로 빌드한다.
-
-```bash
 cd app3d
-./gradlew assembleLumepadDebug     # 또는 assembleRedmagicDebug, assembleLumepadRelease 등
-adb install -r app/build/outputs/apk/lumepad/debug/app-lumepad-debug.apk
+gradlew assembleGlassGithubDebug
 ```
 
-서명해서 배포하려면 `app3d/keystore.properties` 를 만든다 (저장소에 넣지 않는다).
+github 배포판은 Leia 백엔드도 함께 컴파일하므로 `app3d/app/libs/redmagic/leia-cnsdk*.jar`가 **컴파일에만** 필요합니다(APK에는 들어가지 않고 S25에서는 쓰이지 않습니다). 필름 렌즈 값(간격 1.51207, 기울기 −0.19057)은 S25 Ultra(SM-S938N)에서 측정한 값입니다.
 
-```properties
-storeFile=/절대/경로/your.jks
-storePassword=...
-keyAlias=...
-keyPassword=...
-```
-
-FFmpeg 오디오 확장(AC3/E-AC3/DTS/TrueHD)은 [`app3d/ffmpeg/README.md`](app3d/ffmpeg/README.md)
-의 스크립트로 만든다. 없어도 빌드는 되지만 그 코덱들이 무음이 된다.
+Leia 태블릿용 원래 설명: [docs/README.leia.ko.md](docs/README.leia.ko.md)
 
 ---
 
-## 저장소에 없는 것
+## English
 
-| | 왜 |
+The **Galaxy S25 Ultra + SpatialGlass 3D film** edition of [DepthFlix](https://github.com/nautymac/DepthFlix) (originally for Leia tablets). Watch SBS/TB 3D videos and photos, and ordinary 2D videos, in 3D on the phone without glasses.
+
+The film is **only a lens**: the phone has no 3D engine. So the app does it itself:
+
+- **Weaving**: both eyes' pictures are mixed per pixel to match the film's lenses, with blending curves measured separately for red, green and blue.
+- **Eye tracking**: the front camera finds both irises about 60 times a second and moves the weave with your head, so 3D holds as you move. Processed on the phone only.
+
+### Features
+
+| Feature | What it does |
 |---|---|
-| `app3d/app/libs/lumepad/leia-cnsdk.jar`, `app3d/app/libs/redmagic/leia-cnsdk.jar` | Leia 의 저작물. 기기에서 꺼내 쓸 것 |
-| `app3d/app/src/main/jniLibs/` | 같음 (`libleiaSDK.so`, `libleiaspdlog.so`) |
-| `app3d/app/src/main/assets/shaders/`, `cnsdk.version` | 같음 |
-| `app3d/ffmpeg/src/main/jni/ffmpeg/` | 빌드 스크립트로 재생성 |
-| 서명 키 | 당연히 |
+| **3D videos and photos** | Detects SBS/TB (half and full) from the pixels and shows them in 3D; 2D videos get synthetic parallax. |
+| **3D tune bar** | While playing, tap **3D tune** (top right) to adjust phase, tracking strength, brightness and contrast while watching. Saved. |
+| **Brightness and contrast lift** | Film 3D is dimmer because each eye gets only part of the pixels. Lifted by default (brightness 1.4, contrast 1.15), adjustable. |
+| **Dead-centre placement** | The picture sits in the exact centre of the panel with equal bars, whatever the camera cutout does to the window. |
+| **USB drives** | The **USB** button above the list. Allow the drive once, then browse its folders, videos and photos and open them in 3D. Long-press to pick another drive. |
+| **Subtitles** | Picks up .srt/.smi files next to the video automatically (USB included, Korean first); otherwise turns on the video's built-in subtitles. |
+| **3D Fit tool** | **DepthFlix 3D Fit** in the launcher: calibrates the film's lens values (horizontal, vertical, image) and views SBS photos in 3D; the player uses the same values. |
+| **And the rest** | SMB, DLNA and URL playback, DTS/AC3 audio (FFmpeg), resume, and the other DepthFlix features. |
+
+### Install
+
+1. Download `DepthFlix-S25Ultra-*.apk` from [Releases](../../releases) and install it.
+2. Allow **storage** on first launch and the **camera** (eye tracking) the first time you watch in 3D.
+
+Its package is `com.nauty.p3d.glass`, so it installs next to other DepthFlix builds.
+
+### Getting a good picture
+
+- Watch from **30–40 cm**. Much closer (about 20 cm) it turns 2D.
+- Hold the phone in landscape with the **front camera on the left**.
+- If the picture looks doubled or inside-out, slide **3D tune › Phase** slowly to the sharpest point. If it breaks as you move your head sideways, adjust **Track** (1.5–2.5).
+- On a new phone or film, first line up the stripes in **DepthFlix 3D Fit › Calibrate**.
+
+### Build
+
+It is the `glassGithub` flavour (`app3d/app/src/glass/`).
+
+```
+cd app3d
+gradlew assembleGlassGithubDebug
+```
+
+The github distribution also compiles the Leia backend, so `app3d/app/libs/redmagic/leia-cnsdk*.jar` is needed **at compile time only** (it is not packaged and never used on the S25). The film's lens values (pitch 1.51207, slant −0.19057) were measured on an S25 Ultra (SM-S938N).
+
+Original Leia tablet documentation: [docs/README.leia.en.md](docs/README.leia.en.md)
 
 ---
 
-## 라이선스
-
-[MIT](LICENSE) — 이 저장소에 담긴 우리 코드에 한한다.
-
-이 앱은 다음을 함께 쓴다. 각자의 조건을 따른다.
-
-| | |
-|---|---|
-| [AndroidX Media3 (ExoPlayer)](https://github.com/androidx/media) | Apache-2.0 |
-| [libVLC for Android](https://code.videolan.org/videolan/vlc-android) | LGPL-2.1+ |
-| [FFmpeg](https://ffmpeg.org/) | LGPL-2.1+ (기본 설정 기준) |
-| Leia CNSDK / LeiaMediaSDK | Leia Inc. 사유. **저장소에 없다** — 각자 기기에서 꺼내 쓸 것 |
+Not affiliated with Samsung, the film's maker or Leia.

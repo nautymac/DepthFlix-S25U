@@ -41,15 +41,21 @@ final class GlassWeaver implements Stereo3DView.Weaver {
             + "uniform float uK0;\n"
             + "uniform int uSwap;\n"
             + "uniform sampler2D uWeave;\n"
+            + "uniform vec2 uOrigin;\n"       // 창의 왼쪽 아래가 패널에서 어디인지 (패널 화소)
+            + "uniform vec2 uShift;\n"        // 그림을 패널 정중앙으로 옮기는 양 (창 화소)
             + "\n"
             + "float phaseAt() {\n"
-            + "  vec2 p = gl_FragCoord.xy;\n"
+            + "  vec2 p = gl_FragCoord.xy + uOrigin;\n"   // 렌즈는 패널 위에 있다
             + "  vec2 q = p + uEye * uK - uRef * uK0 - p * (uK - uK0);\n"
             + "  return fract((q.x + q.y * uSlant) / uPitch + uPhase);\n"
             + "}\n"
             + "\n"
             + "void main() {\n"
-            + "  vec2 uv = gl_FragCoord.xy / uSize;\n"
+            + "  vec2 uv = (gl_FragCoord.xy - uShift) / uSize;\n"
+            + "  if (uv.x < 0.0 || uv.x > 1.0 || uv.y < 0.0 || uv.y > 1.0) {\n"
+            + "    gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);\n"
+            + "    return;\n"
+            + "  }\n"
             + "  vec3 l = texture2D(uTex, vec2(uv.x * 0.5, uv.y)).rgb;\n"
             + "  vec3 r = texture2D(uTex, vec2(0.5 + uv.x * 0.5, uv.y)).rgb;\n"
             + "  float ph = phaseAt();\n"
@@ -61,7 +67,14 @@ final class GlassWeaver implements Stereo3DView.Weaver {
 
     private volatile Settings settings;
     private final float pixelMm;
+    private final int panelW;
+    private final int panelH;
+    private volatile int viewLeft;
+    private volatile int viewTop;
     private volatile EyeTracker.State eye;
+
+    private int uOrigin;
+    private int uShift;
 
     private int program;
     private int aPos;
@@ -79,9 +92,21 @@ final class GlassWeaver implements Stereo3DView.Weaver {
     private int weaveTexture;
     private FloatBuffer quad;
 
-    GlassWeaver(Settings settings, float pixelMm) {
+    /**
+     * @param panelW 패널 가로 화소 (가로 방향 기준)
+     * @param panelH 패널 세로 화소
+     */
+    GlassWeaver(Settings settings, float pixelMm, int panelW, int panelH) {
         this.settings = settings;
         this.pixelMm = pixelMm;
+        this.panelW = panelW;
+        this.panelH = panelH;
+    }
+
+    /** 창(GL 뷰)의 왼쪽 위가 패널에서 어디인지. 카메라 구멍을 피해 창이 밀려 있을 수 있다. */
+    void setPlacement(int left, int top) {
+        viewLeft = left;
+        viewTop = top;
     }
 
     /** 도구에서 값을 바꾸고 돌아왔을 때 새로 읽은 값으로 바꾼다. */
@@ -109,6 +134,8 @@ final class GlassWeaver implements Stereo3DView.Weaver {
         uK0 = GLES20.glGetUniformLocation(program, "uK0");
         uSwap = GLES20.glGetUniformLocation(program, "uSwap");
         uWeave = GLES20.glGetUniformLocation(program, "uWeave");
+        uOrigin = GLES20.glGetUniformLocation(program, "uOrigin");
+        uShift = GLES20.glGetUniformLocation(program, "uShift");
 
         float[] verts = {-1f, -1f, 1f, -1f, -1f, 1f, 1f, 1f};
         quad = ByteBuffer.allocateDirect(verts.length * 4).order(ByteOrder.nativeOrder()).asFloatBuffer();
@@ -140,6 +167,18 @@ final class GlassWeaver implements Stereo3DView.Weaver {
         GLES20.glUniform1i(uWeave, 1);
         GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
 
+        // 렌즈와 눈은 패널 화소 기준 (3D 맞추기 도구와 같은 기준). 창이 카메라 구멍 옆에서
+        // 시작하면 그만큼 원점을 더한다.
+        int pw = panelW > 0 ? panelW : width;
+        int ph = panelH > 0 ? panelH : height;
+        float ox = viewLeft;
+        float oy = ph - (viewTop + height);
+        GLES20.glUniform2f(uOrigin, ox, oy);
+        // 그림은 창 가운데에 들어 있다 — 패널 정중앙으로 옮겨 양쪽 여백을 같게 한다.
+        float shiftX = (pw / 2f - viewLeft) - width / 2f;
+        float shiftY = (ph / 2f - oy) - height / 2f;
+        GLES20.glUniform2f(uShift, shiftX, shiftY);
+
         GLES20.glUniform2f(uSize, width, height);
         GLES20.glUniform1f(uPitch, settings.pitch);
         GLES20.glUniform1f(uSlant, settings.slant);
@@ -153,12 +192,12 @@ final class GlassWeaver implements Stereo3DView.Weaver {
             float mm = pixelMm;
             k = settings.gap / (e.zMm / mm);
             k0 = settings.gap / (REFERENCE_DISTANCE_MM / mm);
-            ex = width / 2f + e.xMm / mm;
-            ey = height / 2f + e.yMm * settings.trackY / mm;
+            ex = pw / 2f + e.xMm / mm;
+            ey = ph / 2f + e.yMm * settings.trackY / mm;
         }
         GLES20.glUniform2f(uEye, ex, ey);
         GLES20.glUniform1f(uK, k);
-        GLES20.glUniform2f(uRef, width / 2f, height / 2f);
+        GLES20.glUniform2f(uRef, pw / 2f, ph / 2f);
         GLES20.glUniform1f(uK0, k0);
         GLES20.glUniform1i(uSwap, settings.swap ? 1 : 0);
 

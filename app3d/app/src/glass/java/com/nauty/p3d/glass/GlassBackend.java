@@ -57,13 +57,25 @@ public final class GlassBackend implements PanelBackend {
     public void attach(Activity a, Stereo3DView view) {
         activity = a;
         gl = view;
+
+        // 창은 카메라 구멍 옆에서 시작할 수 있다. 위빙과 그림 위치는 패널 화소 기준으로
+        // 맞추므로(GlassWeaver), 창이 패널 어디에 있는지 레이아웃이 바뀔 때마다 알려 준다.
+        view.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+            @Override public void onLayoutChange(View v, int l, int t, int r, int b,
+                                                 int ol, int ot, int or, int ob) {
+                int[] at = new int[2];
+                v.getLocationOnScreen(at);
+                if (weaver != null) weaver.setPlacement(at[0], at[1]);
+            }
+        });
         DisplayMetrics m = new DisplayMetrics();
         a.getWindowManager().getDefaultDisplay().getRealMetrics(m);
         pixelMm = 25.4f / m.xdpi;
         Log.i(TAG, String.format(Locale.US, "display %dx%d xdpi %.1f -> pixel %.4f mm",
                 m.widthPixels, m.heightPixels, m.xdpi, pixelMm));
         settings = new Settings(a);
-        weaver = new GlassWeaver(settings, pixelMm);
+        weaver = new GlassWeaver(settings, pixelMm,
+                Math.max(m.widthPixels, m.heightPixels), Math.min(m.widthPixels, m.heightPixels));
         view.setWeaver(weaver);
 
         // 보면서 바로 맞추는 위상·추적 세기 조절 (오른쪽 위 "3D 조절").

@@ -54,7 +54,10 @@ Leia 태블릿용 [DepthFlix](https://github.com/nautymac/DepthFlix)의 **갤럭
 **2. 보기**
 
 - 화면을 **한 번 터치**하면 3D ↔ 2D가 바뀝니다.
-- **길게 누르면** 메뉴: 사진 추가 · ◀ ▶ · 가로·세로 줄 맞추기 · 처음 값으로.
+- **한 손가락으로 화면을 꾹(1초) 누르면** 아래에 메뉴가 나옵니다: 사진 추가 · ◀ 이전 / 다음 ▶ · 가로·세로 줄 맞추기 · 처음 값으로 · 닫기.
+
+![한 손가락으로 꾹 누르면 나오는 메뉴](docs/images/tool-menu.png)
+
 - 영상·사진은 목록에서 고르면 3D로 열립니다. USB는 목록 위 **USB** 버튼.
 
 **3. 보면서 맞추기: 3D 조절**
@@ -147,7 +150,10 @@ Adjust with the slider or −/+ until the red stripes you see through the film r
 **2. Watching**
 
 - **Tap once** to switch 3D ↔ 2D.
-- **Long-press** for the menu: add photos · ◀ ▶ · line up the lens · reset to defaults.
+- **Press and hold one finger on the screen (about 1 s)** for the menu at the bottom: add photos · ◀ prev / next ▶ · line up the lens · reset to defaults · close.
+
+![The menu from a one-finger long press](docs/images/tool-menu.png)
+
 - Pick videos and photos from the list and they open in 3D. USB drives: the **USB** button.
 
 **3. Fine-tuning while watching: 3D tune**

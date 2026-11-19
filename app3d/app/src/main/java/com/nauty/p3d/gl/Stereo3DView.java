@@ -59,6 +59,12 @@ public class Stereo3DView extends GLSurfaceView {
     private volatile float        convergence  = 0.0f;
     /** 화면 비 강제값 (0 = 소스 그대로). 레터박스가 거슬리거나 소스 비율이 틀린 경우용. */
     public static final float ASPECT_FILL = -1f;
+    /**
+     * Fill the screen without stretching: keep the source's shape and enlarge it until it
+     * covers the screen, cutting a little off top/bottom (or the sides). A 16:9 picture on
+     * the S25 Ultra's 19.5:9 screen loses about 9% of its height.
+     */
+    public static final float ASPECT_ZOOM = -2f;
 
     /**
      * 2D→3D 시어 램프에서 시차가 0 이 되는 세로 위치 (0=위, 1=아래).
@@ -180,6 +186,19 @@ public class Stereo3DView extends GLSurfaceView {
     public void setOutput(Output o)             { output = o;       contentChanged(); }
     public void setSwapLR(boolean s)            { swapLR = s;       contentChanged(); }
     public void setDepth(float d)               { depth = d;        contentChanged(); }
+
+    /**
+     * AI depth for 2D sources ({@link DepthProvider}); null = the shear ramp only.
+     * While the provider is active and has a depth map, 2D pictures get their parallax
+     * from it, scaled by the same depth slider as the shear.
+     */
+    private volatile DepthProvider depthProvider;
+    public void setDepthProvider(DepthProvider p) { depthProvider = p; contentChanged(); }
+
+    /** Full parallax range (texture widths) between depth 0 and 1 at depth slider 1. */
+    private static final float AI_DEPTH_RANGE = 0.03f;
+    /** Depth that stays on the screen plane: farther goes behind it, nearer comes out. */
+    private static final float AI_DEPTH_ZERO = 0.4f;
     public void setBottomCut(float c)           { bottomCut = c;    contentChanged(); }
     /** Android 13 미만에서 HDR 영상일 때만 0 이 아니다 (ExoEngine.shaderHdrMode 참고). */
     public void setHdrMode(int m)               { hdrMode = m;      contentChanged(); }
@@ -347,6 +366,17 @@ public class Stereo3DView extends GLSurfaceView {
          */
         private final AtomicInteger pendingFrames = new AtomicInteger(0);
 
+        // ---- AI depth ----
+        /** Small square target the snapshot for the depth model is drawn into. */
+        private Fbo depthIn;
+        private java.nio.ByteBuffer readBuf;
+        private int depthTex;
+        private int depthTexW, depthTexH;
+        private boolean depthValid;
+        /** A picture has arrived that the depth model has not been given yet. */
+        private boolean depthDirty = true;
+        private String depthWhy = "";
+
         @Override
         public void onSurfaceCreated(GL10 gl, EGLConfig cfg) {
             GLES20.glClearColor(0f, 0f, 0f, 1f);
@@ -357,6 +387,11 @@ public class Stereo3DView extends GLSurfaceView {
             surfaceTexture.setOnFrameAvailableListener(this);
 
             src       = new SourceRenderer(getContext());
+            // New context: the old depth objects are gone with the old one.
+            depthIn = null;
+            depthTex = 0;
+            depthValid = false;
+            depthDirty = true;
             blit      = new BlitRenderer(getContext());
             subs      = new SubtitleRenderer();
             weaverReady = null;     // 새 컨텍스트: 위빙 프로그램도 다시 만들어야 한다
@@ -401,6 +436,7 @@ public class Stereo3DView extends GLSurfaceView {
                     surfaceTexture.updateTexImage();   // 남은 게 없으면 no-op, 블로킹 없음
                 }
                 surfaceTexture.getTransformMatrix(stMatrix);
+                depthDirty = true;
             }
 
             // 새 자막이 있으면 텍스처로 올린다.
@@ -529,8 +565,81 @@ public class Stereo3DView extends GLSurfaceView {
             return surfW;
         }
 
+        /**
+         * AI depth: gives the provider a snapshot of the newest picture when it is free and
+         * uploads the newest depth map. Returns true when the 2D picture should take its
+         * parallax from the depth map this frame.
+         */
+        private boolean prepareDepth(SourceFormat f, boolean flat) {
+            DepthProvider p = depthProvider;
+            String why = p == null ? "no provider" : !p.active() ? "provider off/loading"
+                    : f != SourceFormat.MONO_2D ? "source " + f : flat ? "2D output"
+                    : extSingleView ? "single view" : "on";
+            if (!why.equals(depthWhy)) {
+                depthWhy = why;
+                GlUtil.logi("AI depth: " + why);
+            }
+            if (p == null || !p.active() || f != SourceFormat.MONO_2D || flat || extSingleView) {
+                depthValid = false;
+                return false;
+            }
+            if (depthDirty && p.wantsFrame()) {
+                int iw = p.inputWidth();
+                int ih = p.inputHeight();
+                if (depthIn == null || depthIn.width != iw || depthIn.height != ih) {
+                    if (depthIn != null) depthIn.release();
+                    depthIn = new Fbo(iw, ih);
+                    readBuf = java.nio.ByteBuffer.allocateDirect(iw * ih * 4)
+                            .order(java.nio.ByteOrder.nativeOrder());
+                }
+                float[] uv = uvFor(f, true);
+                depthIn.bind();
+                GLES20.glViewport(0, 0, iw, ih);
+                src.setDepthMap(0, 0f, 0f);
+                src.draw(oesTex, stMatrix, uv[0], uv[1], uv[2], uv[3], 0f, 0f, 1f);
+                readBuf.position(0);
+                GLES20.glReadPixels(0, 0, iw, ih, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE, readBuf);
+                depthIn.unbind();
+                readBuf.position(0);
+                p.submit(readBuf);
+                depthDirty = false;
+            }
+            java.nio.ByteBuffer d = p.takeDepth();
+            if (d != null) {
+                int dw = p.depthWidth();
+                int dh = p.depthHeight();
+                if (depthTex == 0) {
+                    int[] t = new int[1];
+                    GLES20.glGenTextures(1, t, 0);
+                    depthTex = t[0];
+                    GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, depthTex);
+                    GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_LINEAR);
+                    GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR);
+                    GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_S, GLES20.GL_CLAMP_TO_EDGE);
+                    GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_CLAMP_TO_EDGE);
+                    depthTexW = 0;
+                }
+                GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, depthTex);
+                GLES20.glPixelStorei(GLES20.GL_UNPACK_ALIGNMENT, 1);   // 518 is not a multiple of 4
+                d.position(0);
+                if (depthTexW != dw || depthTexH != dh) {
+                    GLES20.glTexImage2D(GLES20.GL_TEXTURE_2D, 0, GLES20.GL_LUMINANCE, dw, dh, 0,
+                            GLES20.GL_LUMINANCE, GLES20.GL_UNSIGNED_BYTE, d);
+                    depthTexW = dw;
+                    depthTexH = dh;
+                } else {
+                    GLES20.glTexSubImage2D(GLES20.GL_TEXTURE_2D, 0, 0, 0, dw, dh,
+                            GLES20.GL_LUMINANCE, GLES20.GL_UNSIGNED_BYTE, d);
+                }
+                GLES20.glPixelStorei(GLES20.GL_UNPACK_ALIGNMENT, 4);
+                depthValid = true;
+            }
+            return depthValid;
+        }
+
         /** 좌/우 뷰를 FBO 의 양쪽 절반에 그린다. */
         private void renderSbsToFbo() {
+            boolean aiDepth = prepareDepth(sourceFormat, output == Output.TWO_D);
             fbo.bind();
             GLES20.glViewport(0, 0, fbo.width, fbo.height);
             GLES20.glClearColor(0f, 0f, 0f, 1f);
@@ -563,7 +672,15 @@ public class Stereo3DView extends GLSurfaceView {
 
             float as = sourceAspect(f);
             float dispW, dispH;
-            if (eyeAsp > as) {                        // 상자가 소스보다 옆으로 넓다 -> 좌우 여백
+            if (aspectOverride == ASPECT_ZOOM) {      // 확대해서 채움: 넘치는 쪽은 가위질로 잘린다
+                if (eyeAsp > as) {
+                    dispW = boxDispW;
+                    dispH = boxDispW / as;
+                } else {
+                    dispH = boxH;
+                    dispW = boxH * as;
+                }
+            } else if (eyeAsp > as) {                 // 상자가 소스보다 옆으로 넓다 -> 좌우 여백
                 dispH = boxH;
                 dispW = boxH * as;
             } else {                                  // 상자가 더 좁다 -> 위아래 여백
@@ -640,8 +757,17 @@ public class Stereo3DView extends GLSurfaceView {
             // 이것이 예전 인터레이스 단계 수렴과의 결정적 차이다 (setConvergence 주석).
             GLES20.glEnable(GLES20.GL_SCISSOR_TEST);
 
+            // AI depth: each eye moves half the parallax, in opposite directions (like the
+            // shear), and the shear is off.
+            float aiAmt = aiDepth ? AI_DEPTH_RANGE * depth * 0.5f : 0f;
+            if (aiDepth) {
+                halfTop = 0f;
+                halfSlope = 0f;
+            }
+
             GLES20.glScissor(0, 0, halfW, boxH);
             GLES20.glViewport(dxL - conv, dy, dw, dh);
+            src.setDepthMap(aiDepth ? depthTex : 0, -aiAmt, AI_DEPTH_ZERO);
             src.draw(oesTex, stMatrix, uvL[0], uvL[1], uvL[2], uvL[3],
                     -halfTop, -halfSlope, bottomCut);
             drawSubtitleInHalf(0, halfW, shiftHalf);
@@ -649,8 +775,10 @@ public class Stereo3DView extends GLSurfaceView {
             // 우안: 2D 소스면 반대 방향으로 나머지 절반
             GLES20.glScissor(halfW, 0, Math.max(0, fbo.width - halfW), boxH);
             GLES20.glViewport(dxR + conv, dy, dw, dh);
+            src.setDepthMap(aiDepth ? depthTex : 0, aiAmt, AI_DEPTH_ZERO);
             src.draw(oesTex, stMatrix, uvR[0], uvR[1], uvR[2], uvR[3],
                     halfTop, halfSlope, bottomCut);
+            src.setDepthMap(0, 0f, 0f);
             drawSubtitleInHalf(halfW, halfW, -shiftHalf);
 
             GLES20.glDisable(GLES20.GL_SCISSOR_TEST);
@@ -687,7 +815,9 @@ public class Stereo3DView extends GLSurfaceView {
             float[] uv = uvFor(f, true);
             float as = sourceAspect(f);
             float sw, sh;
-            if ((float) surfW / (float) surfH > as) {
+            boolean wide = (float) surfW / (float) surfH > as;
+            if (aspectOverride == ASPECT_ZOOM) wide = !wide;   // cover instead of fit
+            if (wide) {
                 sh = surfH;
                 sw = surfH * as;
             } else {

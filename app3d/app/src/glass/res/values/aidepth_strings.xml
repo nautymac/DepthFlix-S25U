@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="aidepth_loading">Loading %s… (a few seconds the first time)</string>
+    <string name="aidepth_failed">Cannot use %s — showing the basic way</string>
+    <string name="aidepth_status">%1$s · %2$s · %3$.1f ms · %4$.0f fps</string>
+</resources>

@@ -5,7 +5,16 @@ precision highp float;    // PQ 곡선은 0 근처 값이 작아 mediump 으론 
 precision mediump float;
 #endif
 varying vec2 vTex;
+varying vec2 vUv;
 uniform samplerExternalOES sTexture;
+// AI depth (DepthProvider): 2D -> 3D by a depth map instead of the shear ramp.
+// Each eye samples the picture shifted by uDepthAmt * (depth - uDepthZero), the depth read
+// where the shifted sample lands (a few fixed-point steps: a backward warp that keeps
+// edges of near objects in place instead of smearing the background over them).
+uniform sampler2D sDepth;    // 255 = near
+uniform int   uDepthOn;
+uniform float uDepthAmt;     // this eye's shift per unit depth, in texture x (signed)
+uniform float uDepthZero;    // depth that stays on the screen plane
 // 2D->3D 시어. 원본 frag2dto3d.sh 수식:
 //   tmp.x += 0.004 - (vTex.y * screenHeight) * 0.0000122
 // screenHeight 를 uShearSlope 에 흡수시켜 파라미터 2개로 정리.
@@ -53,7 +62,18 @@ const mat3 BT2020_TO_709 = mat3(
 
 void main() {
     vec2 t = vTex;
-    t.x += uShearTop - vTex.y * uShearSlope;
+    if (uDepthOn != 0) {
+        // Damped steps: at a depth edge an undamped step flips between the two sides
+        // and leaves a thin line; halving the step settles it on one side.
+        float off = uDepthAmt * (texture2D(sDepth, vUv).r - uDepthZero);
+        for (int i = 0; i < 4; i++) {
+            float d = texture2D(sDepth, vec2(vUv.x + off, vUv.y)).r;
+            off = 0.5 * (off + uDepthAmt * (d - uDepthZero));
+        }
+        t.x += off;
+    } else {
+        t.x += uShearTop - vTex.y * uShearSlope;
+    }
     vec4 c = texture2D(sTexture, t);
     if (uHdr != 0) {
         vec3 lin;

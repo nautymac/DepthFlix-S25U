@@ -39,3 +39,6 @@ app3d/app/src/redmagic/assets/
 app3d/app/libs/**/*.bak
 app3d/app/src/main/assets/shaders/
 app3d/build_depthflix.log
+
+# AI depth test: the models are too big for git (download: see DEPTH-TEST.md)
+app3d/app/src/glass/assets/depth/

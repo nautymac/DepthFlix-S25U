@@ -113,10 +113,42 @@ public class PhotoEngine implements VideoEngine {
             if (in == null) return null;
             Bitmap b = BitmapFactory.decodeStream(in, null, o);
             in.close();
-            return b;
+            return b == null ? null : upright(ctx, uri, b);
         } catch (Throwable t) {
             Log.w(TAG, "사진 디코딩 실패: " + uri, t);
             return null;
+        }
+    }
+
+    /**
+     * Camera photos keep the sensor's landscape pixels and say how to turn them in EXIF
+     * (a portrait shot is 4000x3000 + "rotate 90"). Turn the bitmap so it shows upright.
+     */
+    private static Bitmap upright(Context ctx, Uri uri, Bitmap b) {
+        int deg = 0;
+        try (InputStream in = ctx.getContentResolver().openInputStream(uri)) {
+            if (in != null && Build.VERSION.SDK_INT >= 24) {
+                int o = new android.media.ExifInterface(in).getAttributeInt(
+                        android.media.ExifInterface.TAG_ORIENTATION,
+                        android.media.ExifInterface.ORIENTATION_NORMAL);
+                if (o == android.media.ExifInterface.ORIENTATION_ROTATE_90) deg = 90;
+                else if (o == android.media.ExifInterface.ORIENTATION_ROTATE_180) deg = 180;
+                else if (o == android.media.ExifInterface.ORIENTATION_ROTATE_270) deg = 270;
+            }
+        } catch (Throwable t) {
+            Log.w(TAG, "EXIF: " + t);
+        }
+        if (deg == 0) return b;
+        android.graphics.Matrix m = new android.graphics.Matrix();
+        m.postRotate(deg);
+        try {
+            Bitmap r = Bitmap.createBitmap(b, 0, 0, b.getWidth(), b.getHeight(), m, true);
+            if (r != b) b.recycle();
+            Log.i(TAG, "사진 EXIF 회전 " + deg + "도");
+            return r;
+        } catch (Throwable t) {
+            Log.w(TAG, "회전 실패", t);
+            return b;
         }
     }
 

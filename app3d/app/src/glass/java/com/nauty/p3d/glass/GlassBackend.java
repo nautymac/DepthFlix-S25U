@@ -40,6 +40,9 @@ public final class GlassBackend implements PanelBackend {
     private boolean resumed;
     private boolean askedCamera;
 
+    // ---- AI depth (2D -> 3D by a depth model on the NPU) ----
+    private DepthEngine depth;
+
     public GlassBackend() {
     }
 
@@ -93,6 +96,7 @@ public final class GlassBackend implements PanelBackend {
                         if (v != null) v.requestRender();
                     }
                 });
+        setupAiDepth(a, view);
         // No line-up button on this bar: it made the bar too big over the picture. The
         // line-up lives in the 3D Fit tool (the "3D 맞추기" button on the list screen).
         // 화면에 붙이는 건 onResume 에서 한다: PlayerActivity 는 attach 뒤에
@@ -144,6 +148,25 @@ public final class GlassBackend implements PanelBackend {
         updateTracking();
     }
 
+    /**
+     * AI depth: 2D videos and photos always get their 3D from Depth Anything V2 on the NPU.
+     * Until the model is ready, or if it cannot run, the picture uses the tilt ramp.
+     */
+    private void setupAiDepth(final Activity a, Stereo3DView view) {
+        depth = new DepthEngine(a, new DepthEngine.Listener() {
+            @Override public void onStatus(String text) {
+                if (text != null) Log.i(TAG, "AI depth: " + text);
+            }
+
+            @Override public void onDepth() {
+                Stereo3DView v = gl;
+                if (v != null) v.requestRender();
+            }
+        });
+        view.setDepthProvider(depth);
+        depth.setModel(DepthEngine.Model.DA2);
+    }
+
     @Override
     public void onPause() {
         resumed = false;
@@ -155,6 +178,9 @@ public final class GlassBackend implements PanelBackend {
         resumed = false;
         updateTracking();
         if (gl != null) gl.setWeaver(null);
+        if (gl != null) gl.setDepthProvider(null);
+        if (depth != null) depth.close();
+        depth = null;
         gl = null;
         activity = null;
     }

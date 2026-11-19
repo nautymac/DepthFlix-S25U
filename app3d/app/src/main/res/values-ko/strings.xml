@@ -84,6 +84,7 @@
     <string name="btn_redetect">↺ 자동 판별로 되돌리기</string>
     <string name="btn_aspect">화면 비: %s</string>
     <string name="aspect_auto">자동</string>
+    <string name="aspect_zoom">확대해서 채우기</string>
     <string name="aspect_fill">꽉 채우기</string>
     <string name="lbl_aspect_off">화면 비 미세조정 (지금은 자동)</string>
     <string name="lbl_aspect_on">화면 비 미세조정 — %.2f : 1</string>

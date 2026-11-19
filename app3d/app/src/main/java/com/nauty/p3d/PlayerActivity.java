@@ -1372,12 +1372,13 @@ public class PlayerActivity extends Activity
      * 싫을 때 쓰라고 둔다. 자동 판별이 맞으면 손댈 일이 없다.
      */
     private static final float[] ASPECTS = {
-            0f, 16f / 9f, 2.40f, 1.85f, 4f / 3f, Stereo3DView.ASPECT_FILL
+            0f, Stereo3DView.ASPECT_ZOOM, 16f / 9f, 2.40f, 1.85f, 4f / 3f, Stereo3DView.ASPECT_FILL
     };
 
     private String aspectLabel(float a) {
         if (a == 0f)                        return getString(R.string.aspect_auto);
         if (a == Stereo3DView.ASPECT_FILL)  return getString(R.string.aspect_fill);
+        if (a == Stereo3DView.ASPECT_ZOOM)  return getString(R.string.aspect_zoom);
         if (Math.abs(a - 16f / 9f)  < 0.01f) return "16:9";
         if (Math.abs(a - 2.40f)     < 0.01f) return "2.40:1";
         if (Math.abs(a - 1.85f)     < 0.01f) return "1.85:1";
@@ -1678,6 +1679,9 @@ public class PlayerActivity extends Activity
      * 그 밑에 깔려 보이지도, 눌리지도 않는다. 그래서 재생바만 이만큼 띄워둔다.
      */
     private int navBarHeight() {
+        // S25 Ultra (glass): the bar sits at the very bottom. Raised by the navigation
+        // bar's height it floated awkwardly above the bottom edge.
+        if ("glass".equals(BuildConfig.FLAVOR_device)) return 0;
         int id = getResources().getIdentifier("navigation_bar_height", "dimen", "android");
         return id > 0 ? getResources().getDimensionPixelSize(id) : 0;
     }

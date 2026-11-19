@@ -86,6 +86,7 @@
     <string name="btn_redetect">↺ Back to automatic detection</string>
     <string name="btn_aspect">Aspect: %s</string>
     <string name="aspect_auto">Auto</string>
+    <string name="aspect_zoom">Zoom to fill</string>
     <string name="aspect_fill">Fill screen</string>
     <string name="lbl_aspect_off">Aspect fine-tune (currently automatic)</string>
     <string name="lbl_aspect_on">Aspect fine-tune — %.2f : 1</string>

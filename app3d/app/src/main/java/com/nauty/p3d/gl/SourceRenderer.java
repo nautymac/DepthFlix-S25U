@@ -22,6 +22,17 @@ public class SourceRenderer {
 
     private final int program;
     private final int aPosition, aTexCoord, uSTMatrix, uShearTop, uShearSlope, uBottomCut, uHdr;
+    private final int sDepth, uDepthOn, uDepthAmt, uDepthZero;
+    /** AI depth for the next draw: texture (0 = off), this eye's signed amount, zero plane. */
+    private int depthTex;
+    private float depthAmt, depthZero;
+
+    /** Next draws use this depth map instead of the shear (tex 0 = back to the shear). */
+    public void setDepthMap(int tex, float amount, float zero) {
+        depthTex = tex;
+        depthAmt = amount;
+        depthZero = zero;
+    }
     private final FloatBuffer posBuf;
     private final float[] uv = new float[8];
     private final FloatBuffer uvBuf;
@@ -42,6 +53,16 @@ public class SourceRenderer {
         uShearSlope = GLES20.glGetUniformLocation(program, "uShearSlope");
         uBottomCut  = GLES20.glGetUniformLocation(program, "uBottomCut");
         uHdr        = GLES20.glGetUniformLocation(program, "uHdr");
+        sDepth      = GLES20.glGetUniformLocation(program, "sDepth");
+        uDepthOn    = GLES20.glGetUniformLocation(program, "uDepthOn");
+        uDepthAmt   = GLES20.glGetUniformLocation(program, "uDepthAmt");
+        uDepthZero  = GLES20.glGetUniformLocation(program, "uDepthZero");
+        // The depth map always lives on unit 1. Left at its default (unit 0) the 2D depth
+        // sampler would share the video's external-texture unit, and GL refuses to draw
+        // with two sampler types on one unit -- a black picture whenever AI depth is off.
+        GLES20.glUseProgram(program);
+        GLES20.glUniform1i(GLES20.glGetUniformLocation(program, "sTexture"), 0);
+        GLES20.glUniform1i(sDepth, 1);
         posBuf = GlUtil.floats(POS);
         uvBuf  = GlUtil.floats(new float[8]);
     }
@@ -82,6 +103,14 @@ public class SourceRenderer {
         GLES20.glUniform1f(uShearSlope, shearSlope);
         GLES20.glUniform1f(uBottomCut, bottomCut);
         GLES20.glUniform1i(uHdr, hdrMode);
+        GLES20.glUniform1i(uDepthOn, depthTex != 0 ? 1 : 0);
+        if (depthTex != 0) {
+            GLES20.glActiveTexture(GLES20.GL_TEXTURE1);
+            GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, depthTex);
+            GLES20.glUniform1f(uDepthAmt, depthAmt);
+            GLES20.glUniform1f(uDepthZero, depthZero);
+            GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
+        }
 
         GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, 4);
 

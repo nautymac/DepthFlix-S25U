@@ -102,9 +102,15 @@ public final class StereoDetect {
             // 3.56:1 짜리 영상은 2D 일 수 없다. 반대로 픽셀 판별은 시차가 큰 소스에서
             // 2D 라고 답하는 일이 있다 (detectImage 주석의 실측 참고).
             SourceFormat byAspect = SourceFormat.fromAspect(aspW, aspH);
-            if (byAspect != null) {
+            // Only very wide is decisive. Tall/square (TB full by shape) is also every
+            // portrait phone video: unless the pixels say 2D or SBS, it is TB.
+            if (byAspect == SourceFormat.SBS_FULL
+                    || (byAspect != null && mono <= tb && sbs <= tb)) {
                 Log.i(TAG, "  해상도가 결정적이라 " + byAspect.tag);
                 return byAspect;
+            }
+            if (byAspect != null) {
+                Log.i(TAG, "  세로/정사각 해상도지만 픽셀은 TB 가 아니다 -> 투표로");
             }
 
             if (sbs == 0 && tb == 0 && mono == 0) return null;   // 쓸만한 표본이 없었다
@@ -249,7 +255,10 @@ public final class StereoDetect {
             // 0.648, 상하차/대비 1.131 로 나와 문턱(0.38)과 배수(2.0) 양쪽 다 못 넘겼다.
             // 이런 프레임에서는 해상도가 훨씬 강한 증거다.
             SourceFormat byAspect = SourceFormat.fromAspect(w, h);
-            if (byAspect != null) {
+            // Only very wide is decisive. Tall or square photos are mostly ordinary
+            // portrait photos and screenshots (828x1792 was shown as TB): look at the
+            // pixels, and call it TB only if they do not say 2D or SBS.
+            if (byAspect == SourceFormat.SBS_FULL) {
                 Log.i(TAG, "사진 스테레오 판별: " + w + "x" + h
                         + " — 해상도가 결정적이라 " + byAspect.tag);
                 return byAspect;
@@ -277,7 +286,7 @@ public final class StereoDetect {
             if (vote == 0) return SourceFormat.MONO_2D;
 
             // 대비가 모자라 픽셀로는 못 갈랐다. 해상도만으로 되는 만큼은 살린다.
-            return SourceFormat.fromAspect(w, h);
+            return byAspect;
 
         } catch (Throwable t) {
             Log.w(TAG, "사진 스테레오 판별 실패: " + uri, t);

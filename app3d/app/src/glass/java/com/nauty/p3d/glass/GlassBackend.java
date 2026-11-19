@@ -42,6 +42,9 @@ public final class GlassBackend implements PanelBackend {
 
     // ---- AI depth (2D -> 3D by a depth model on the NPU) ----
     private DepthEngine depth;
+    /** AI depth on/off, one choice for every video and photo (default on). */
+    private static final String AI_PREFS = "aidepth";
+    private static final String AI_ON = "on";
 
     public GlassBackend() {
     }
@@ -149,8 +152,9 @@ public final class GlassBackend implements PanelBackend {
     }
 
     /**
-     * AI depth: 2D videos and photos always get their 3D from Depth Anything V2 on the NPU.
-     * Until the model is ready, or if it cannot run, the picture uses the tilt ramp.
+     * AI depth: 2D videos and photos get their 3D from Depth Anything V2 on the NPU, unless
+     * the viewer switches it off (the AI depth button on the player's bar). Until the model is ready, or if it cannot
+     * run, the picture uses the tilt ramp.
      */
     private void setupAiDepth(final Activity a, Stereo3DView view) {
         depth = new DepthEngine(a, new DepthEngine.Listener() {
@@ -164,7 +168,29 @@ public final class GlassBackend implements PanelBackend {
             }
         });
         view.setDepthProvider(depth);
-        depth.setModel(DepthEngine.Model.DA2);
+        depth.setModel(a.getSharedPreferences(AI_PREFS, Activity.MODE_PRIVATE).getBoolean(AI_ON, true)
+                ? DepthEngine.Model.DA2 : null);
+    }
+
+    // The switch is the player's bar button (PanelBackend). Off: 2D pictures use the tilt.
+    @Override
+    public boolean hasAiDepth() {
+        return depth != null;
+    }
+
+    @Override
+    public boolean isAiDepthOn() {
+        return depth != null && depth.model() != null;
+    }
+
+    @Override
+    public void setAiDepthOn(boolean on) {
+        if (depth == null || activity == null) return;
+        activity.getSharedPreferences(AI_PREFS, Activity.MODE_PRIVATE).edit()
+                .putBoolean(AI_ON, on).apply();
+        depth.setModel(on ? DepthEngine.Model.DA2 : null);
+        Stereo3DView v = gl;
+        if (v != null) v.requestRender();
     }
 
     @Override

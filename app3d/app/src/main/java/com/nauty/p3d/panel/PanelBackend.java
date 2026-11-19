@@ -66,4 +66,12 @@ public interface PanelBackend {
     void onResume();
     void onPause();
     void onDestroy();
+
+    /** True when this device turns 2D into 3D with an AI depth model (S25 Ultra). */
+    default boolean hasAiDepth() { return false; }
+
+    default boolean isAiDepthOn() { return false; }
+
+    /** Switches AI depth on/off; remembered for every video and photo. */
+    default void setAiDepthOn(boolean on) { }
 }

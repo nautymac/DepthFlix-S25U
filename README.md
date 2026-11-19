@@ -41,7 +41,7 @@ Leia 태블릿용 [DepthFlix](https://github.com/nautymac/DepthFlix)를 **갤럭
 | 기능 | 설명 |
 |---|---|
 | **자동 판별** | SBS·TB(half·full)·2D를 그림의 화소로 판별합니다. 아주 넓은 영상(32:9 등)은 해상도만으로 SBS로 봅니다. 틀리면 설정에서 직접 고르고, **↺ 자동 판별로 되돌리기**로 되돌립니다. |
-| **AI 깊이 (2D→3D)** | 2D 영상·사진은 항상 AI 깊이로 3D가 됩니다. 입체감 세기는 설정의 **깊이** 슬라이더로 조절합니다. 모델을 불러오는 첫 1초 남짓, 또는 모델을 쓸 수 없을 때는 예전 기울기 방식으로 보입니다. |
+| **AI 깊이 (2D→3D)** | 2D 영상·사진은 AI 깊이로 3D가 됩니다. 아래 재생바의 **AI 깊이 켜짐/꺼짐** 버튼으로 끄면 예전 기울기 방식이 됩니다(모든 영상에 공통으로 기억). 입체감 세기는 설정의 **깊이** 슬라이더로 조절합니다. 모델을 불러오는 첫 1초 남짓, 또는 모델을 쓸 수 없을 때는 예전 기울기 방식으로 보입니다. |
 | **3D ↔ 2D** | 화면을 한 번 터치하면 3D와 2D가 바뀝니다. 2D일 때는 카메라(눈 추적)도 꺼집니다. |
 | **사진** | 목록 위 **사진 보기**로 바꾸면 폴더별 사진을 3D로 봅니다. 아래 ◀◀ ▶▶로 이전·다음 사진으로 넘깁니다. |
 
@@ -127,8 +127,8 @@ Leia 태블릿용 [DepthFlix](https://github.com/nautymac/DepthFlix)를 **갤럭
 **2. 보기**
 
 - 목록에서 영상이나 사진을 고르면 3D로 열립니다. 위의 **사진 보기 / 영상 보기**로 목록을 바꿉니다.
-- 2D 영상·사진은 AI 깊이로 자동으로 3D가 됩니다. 처음 열 때 모델을 불러오느라 1초쯤 걸립니다.
-- 화면 한 번 터치: 3D ↔ 2D. 아래 재생바: 목록 · ◀◀ ▶▶ · 재생 위치 · ⚙ 설정.
+- 2D 영상·사진은 AI 깊이로 자동으로 3D가 됩니다. 처음 열 때 모델을 불러오느라 1초쯤 걸립니다(설치 후 맨 처음 한 번은 몇 초). 끄려면 재생바의 **AI 깊이 켜짐** 버튼을 누릅니다.
+- 화면 한 번 터치: 3D ↔ 2D. 아래 재생바: 목록 · ◀◀ ▶▶ · 재생 위치 · AI 깊이 켜짐/꺼짐 · ⚙ 설정.
 - 16:9 영상을 화면에 꽉 채우려면 ⚙ 설정 › **화면 비**를 "확대해서 채우기"로 바꿉니다.
 
 **3. 보면서 맞추기: 3D 조절**
@@ -203,7 +203,7 @@ The film is **only a lens**: the phone has no 3D engine, so the app does three t
 | Feature | What it does |
 |---|---|
 | **Auto detection** | Tells SBS, TB (half and full) and 2D apart from the pixels; very wide videos (32:9 and the like) are SBS by their size alone. If it is wrong, pick the layout in Settings; **↺ Back to automatic detection** undoes that. |
-| **AI depth (2D→3D)** | 2D videos and photos always get their 3D from AI depth. Set the strength with the **Depth** slider in Settings. For the first second or so while the model loads, or if it cannot run, the old tilt is used. |
+| **AI depth (2D→3D)** | 2D videos and photos get their 3D from AI depth. The **AI depth on/off** button on the play bar switches it off for the old tilt (one choice for every video). Set the strength with the **Depth** slider in Settings. For the first second or so while the model loads, or if it cannot run, the old tilt is used. |
 | **3D ↔ 2D** | Tap the screen once. In 2D the camera (eye tracking) is off too. |
 | **Photos** | Switch the list to **Photos** to browse photo folders in 3D; ◀◀ ▶▶ at the bottom go to the previous/next photo. |
 
@@ -289,8 +289,8 @@ In 3D setup, **press and hold one finger (about 1 s)** for the menu at the botto
 **2. Watching**
 
 - Pick a video or photo from the list and it opens in 3D. **Photos / Videos** at the top switches the list.
-- 2D videos and photos turn 3D by AI depth on their own. The first time, loading the model takes about a second.
-- Tap once: 3D ↔ 2D. The bar at the bottom: list · ◀◀ ▶▶ · position · ⚙ Settings.
+- 2D videos and photos turn 3D by AI depth on their own. Loading the model takes about a second (a few seconds the very first time after installing). To turn it off, tap **AI depth on** on the play bar.
+- Tap once: 3D ↔ 2D. The bar at the bottom: list · ◀◀ ▶▶ · position · AI depth on/off · ⚙ Settings.
 - To fill the screen with a 16:9 video, set ⚙ Settings › **Aspect** to "zoom to fill".
 
 **3. Fine-tuning while watching: 3D tune**

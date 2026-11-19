@@ -534,6 +534,24 @@ public class PlayerActivity extends Activity
         bottomBar.addView(timeText, new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
+        // AI depth on/off (S25 Ultra): 2D videos and photos get their 3D from a depth model.
+        if (panel != null && panel.hasAiDepth()) {
+            final Button ai = new Button(this);
+            ai.setAllCaps(false);
+            ai.setText(panel.isAiDepthOn() ? R.string.btn_ai_depth_on : R.string.btn_ai_depth_off);
+            ai.setOnClickListener(new View.OnClickListener() {
+                @Override public void onClick(View v) {
+                    boolean on = !panel.isAiDepthOn();
+                    panel.setAiDepthOn(on);
+                    ai.setText(on ? R.string.btn_ai_depth_on : R.string.btn_ai_depth_off);
+                }
+            });
+            LinearLayout.LayoutParams ap = new LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            ap.leftMargin = dp(12);
+            bottomBar.addView(ai, ap);
+        }
+
         btnSettings = new Button(this);
         btnSettings.setText(R.string.btn_settings);
         btnSettings.setAllCaps(false);

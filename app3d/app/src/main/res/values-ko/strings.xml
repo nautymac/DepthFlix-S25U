@@ -65,6 +65,8 @@
     <!-- 재생 화면 -->
     <string name="no_media">재생할 영상이 지정되지 않았습니다</string>
     <string name="btn_list">≡ 목록</string>
+    <string name="btn_ai_depth_on">AI 깊이 켜짐</string>
+    <string name="btn_ai_depth_off">AI 깊이 꺼짐</string>
     <string name="btn_settings">⚙ 설정</string>
     <string name="engine_exo">ExoPlayer</string>
     <string name="photo_label">사진</string>

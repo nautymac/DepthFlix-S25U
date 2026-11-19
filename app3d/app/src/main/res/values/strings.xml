@@ -67,6 +67,8 @@
     <!-- 재생 화면 -->
     <string name="no_media">No video was specified</string>
     <string name="btn_list">≡ List</string>
+    <string name="btn_ai_depth_on">AI depth on</string>
+    <string name="btn_ai_depth_off">AI depth off</string>
     <string name="btn_settings">⚙ Settings</string>
     <string name="engine_exo">ExoPlayer</string>
     <string name="photo_label">Photo</string>

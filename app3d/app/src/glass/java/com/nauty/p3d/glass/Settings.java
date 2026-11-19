@@ -46,6 +46,21 @@ final class Settings {
     /** Tracking-strength range that looks right on this film at 30-40 cm (user, 2026-11-18). */
     static final float MIN_GAP = 1.5f;
     static final float MAX_GAP = 2.5f;
+    /**
+     * How the stripe period follows the viewing distance (the weave's stretch term), as a
+     * "gap" in pixels, and the distance at which the calibrated pitch is exact.
+     *
+     * Measured 2026-11-20 on an S25 Ultra with the phone facing a mirror, its front camera
+     * reading the red/blue test at eye distances 285, 367 and 433 mm. With one gap driving
+     * both the sideways eye term and this stretch (1.5-2.5, reference 400 mm) the phase ran
+     * +0.30, -0.03 and -0.22 of a period from the left edge of the screen to the right.
+     * Sweeps with other values showed it flatten only as the stretch went down; the fit of
+     * all three distances is -4.86 px with the pitch exact at 344 mm. At 433 mm the phase
+     * then stays within 0.01 of a period across the screen (red/blue contrast 0.82 to 1.00).
+     * The sideways term keeps the user's gap.
+     */
+    static final float STRETCH_GAP = -4.86f;
+    static final float STRETCH_REFERENCE_MM = 344f;
     private static final int PREFS_VERSION = 9;
 
     /** Lens period across the screen, in physical pixels. */

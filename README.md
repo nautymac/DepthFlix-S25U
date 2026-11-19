@@ -20,6 +20,13 @@ Leia 태블릿용 [DepthFlix](https://github.com/nautymac/DepthFlix)를 **갤럭
 - **눈 추적**: 앞카메라로 두 눈의 홍채를 초당 약 60번 찾습니다. 머리를 움직여도 3D가 유지되도록 위빙을 옮깁니다.
 - **AI 깊이**: 2D 영상·사진은 AI 모델(Depth Anything V2)이 장면의 깊이를 읽어 두 눈 그림을 만듭니다. S25 Ultra의 NPU(AI 전용 칩)에서 한 장 약 35ms가 걸립니다.
 
+### v1.4.2에서 바뀐 것
+
+- **거리에 따른 3D 보정**: 가까이 보거나 멀리 볼 때 화면 양쪽 끝의 3D가 어긋나던 것을 고쳤습니다. 화면 가운데뿐 아니라 가장자리까지 고르게 맞습니다.
+  - S25 Ultra를 거울 앞에 세우고 앞카메라로 28~43 cm 거리에서 직접 재서 구한 값입니다. 43 cm에서 화면 좌우의 위상 차이가 0.22주기에서 0.01주기로 줄었습니다.
+  - 업데이트 후 화면 끝이 전보다 어긋나 보이면 **3D 맞추기 › 가로·세로 줄 맞추기**를 한 번 다시 해 주세요.
+- **처음 값으로**: 누르면 먼저 묻고, 바로 다음 창에서 **되돌리기**도 할 수 있습니다.
+
 ### v1.4.0에서 바뀐 것
 
 - **AI 깊이로 2D→3D**: 2D 영상·사진의 입체감을 AI가 만듭니다. 화면 전체가 비스듬히 기울던 예전 방식과 달리, 사람과 물체가 실제 거리대로 앞뒤로 나뉩니다.
@@ -181,6 +188,13 @@ The film is **only a lens**: the phone has no 3D engine, so the app does three t
 - **Weaving**: both eyes' pictures are mixed per pixel to match the film's lenses, with blending curves measured separately for red, green and blue.
 - **Eye tracking**: the front camera finds both irises about 60 times a second and moves the weave with your head, so 3D holds as you move.
 - **AI depth**: for 2D videos and photos an AI model (Depth Anything V2) reads the depth of the scene and builds the two eyes' pictures, about 35 ms a frame on the S25 Ultra's NPU (its AI chip).
+
+### What's new in v1.4.2
+
+- **3D corrected for viewing distance**: the left and right edges of the screen no longer drift out of 3D when you watch from closer or farther away. The whole screen lines up, not only the middle.
+  - Measured on an S25 Ultra facing a mirror, its front camera reading the screen from 28–43 cm. At 43 cm the phase difference across the screen went from 0.22 to 0.01 of a lens period.
+  - If the edges look worse after the update, run **3D setup › Line up the lens** once more.
+- **Reset to defaults** asks first, and the next window offers **Undo**.
 
 ### What's new in v1.4.0
 

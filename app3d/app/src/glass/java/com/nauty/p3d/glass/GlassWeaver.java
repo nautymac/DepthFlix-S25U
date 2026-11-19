@@ -38,7 +38,8 @@ final class GlassWeaver implements Stereo3DView.Weaver {
             + "uniform vec2 uEye;\n"
             + "uniform float uK;\n"
             + "uniform vec2 uRef;\n"
-            + "uniform float uK0;\n"
+            + "uniform float uS;\n"        // stretch gap / eye distance
+            + "uniform float uS0;\n"       // stretch gap / the distance the pitch is exact at
             + "uniform int uSwap;\n"
             + "uniform sampler2D uWeave;\n"
             + "uniform vec2 uOrigin;\n"       // 창의 왼쪽 아래가 패널에서 어디인지 (패널 화소)
@@ -55,7 +56,7 @@ final class GlassWeaver implements Stereo3DView.Weaver {
             + "\n"
             + "float phaseAt() {\n"
             + "  vec2 p = gl_FragCoord.xy + uOrigin;\n"   // 렌즈는 패널 위에 있다
-            + "  vec2 q = p + uEye * uK - uRef * uK0 - p * (uK - uK0);\n"
+            + "  vec2 q = p + (uEye - uRef) * uK + (uRef - p) * (uS - uS0);\n"
             + "  return fract((q.x + q.y * uSlant) / uPitch + uPhase);\n"
             + "}\n"
             + "\n"
@@ -97,7 +98,8 @@ final class GlassWeaver implements Stereo3DView.Weaver {
     private int uEye;
     private int uK;
     private int uRef;
-    private int uK0;
+    private int uS;
+    private int uS0;
     private int uSwap;
     private int uWeave;
     private int weaveTexture;
@@ -142,7 +144,8 @@ final class GlassWeaver implements Stereo3DView.Weaver {
         uEye = GLES20.glGetUniformLocation(program, "uEye");
         uK = GLES20.glGetUniformLocation(program, "uK");
         uRef = GLES20.glGetUniformLocation(program, "uRef");
-        uK0 = GLES20.glGetUniformLocation(program, "uK0");
+        uS = GLES20.glGetUniformLocation(program, "uS");
+        uS0 = GLES20.glGetUniformLocation(program, "uS0");
         uSwap = GLES20.glGetUniformLocation(program, "uSwap");
         uWeave = GLES20.glGetUniformLocation(program, "uWeave");
         uOrigin = GLES20.glGetUniformLocation(program, "uOrigin");
@@ -199,21 +202,24 @@ final class GlassWeaver implements Stereo3DView.Weaver {
         GLES20.glUniform1f(uSlant, settings.slant);
         GLES20.glUniform1f(uPhase, settings.phase);
         float k = 0f;
-        float k0 = 0f;
+        float st = 0f;
+        float st0 = 0f;
         float ex = 0f;
         float ey = 0f;
         EyeTracker.State e = eye;
         if (settings.tracking && e != null && e.valid && e.zMm > 50f) {
             float mm = pixelMm;
             k = settings.gap / (e.zMm / mm);
-            k0 = settings.gap / (REFERENCE_DISTANCE_MM / mm);
+            st = Settings.STRETCH_GAP / (e.zMm / mm);
+            st0 = Settings.STRETCH_GAP / (Settings.STRETCH_REFERENCE_MM / mm);
             ex = pw / 2f + e.xMm / mm;
             ey = ph / 2f + e.yMm * settings.trackY / mm;
         }
         GLES20.glUniform2f(uEye, ex, ey);
         GLES20.glUniform1f(uK, k);
         GLES20.glUniform2f(uRef, pw / 2f, ph / 2f);
-        GLES20.glUniform1f(uK0, k0);
+        GLES20.glUniform1f(uS, st);
+        GLES20.glUniform1f(uS0, st0);
         GLES20.glUniform1i(uSwap, settings.swap ? 1 : 0);
 
         GLES20.glEnableVertexAttribArray(aPos);

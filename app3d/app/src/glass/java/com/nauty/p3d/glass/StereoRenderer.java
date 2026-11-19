@@ -52,7 +52,8 @@ final class StereoRenderer implements GLSurfaceView.Renderer {
             + "uniform vec2 uEye;\n"       // eye position on the screen plane, pixels
             + "uniform float uK;\n"        // gap / eye distance; 0 = no tracking
             + "uniform vec2 uRef;\n"       // reference eye position (screen centre), pixels
-            + "uniform float uK0;\n"       // gap / reference distance
+            + "uniform float uS;\n"        // stretch gap / eye distance
+            + "uniform float uS0;\n"       // stretch gap / the distance the pitch is exact at
             + "uniform int uMode;\n"       // 0 = 3D, 1 = original, 2 = red/blue test, 3 = red/black calibration
             + "uniform int uSwap;\n"
             + "uniform int uHasImage;\n"
@@ -75,12 +76,13 @@ final class StereoRenderer implements GLSurfaceView.Renderer {
             + "  return sampleImage(vec2((x + eye) * 0.5, uv.y));\n"
             + "}\n"
             + "\n"
-            // Lens phase of the (sub)pixel. The calibration holds for the reference eye
-            // (straight ahead at the reference distance); tracking only adds the change
-            // from there: q = p + (E - p) k - (C - p) k0.
+            // Lens phase of the (sub)pixel. The calibration holds for an eye straight ahead;
+            // tracking adds the eye term (E - C) k, which follows the head sideways, and the
+            // stretch (C - p)(s - s0), which changes the stripe period with distance
+            // (see Settings.STRETCH_GAP).
             + "float phaseAt(float dx) {\n"
             + "  vec2 p = gl_FragCoord.xy + vec2(dx, 0.0);\n"
-            + "  vec2 q = p + uEye * uK - uRef * uK0 - p * (uK - uK0);\n"
+            + "  vec2 q = p + (uEye - uRef) * uK + (uRef - p) * (uS - uS0);\n"
             + "  return fract((q.x + q.y * uSlant) / uPitch + uPhase);\n"
             + "}\n"
             + "\n"
@@ -140,7 +142,8 @@ final class StereoRenderer implements GLSurfaceView.Renderer {
     private int uEye;
     private int uK;
     private int uRef;
-    private int uK0;
+    private int uS;
+    private int uS0;
     private int uMode;
     private int uSwap;
     private int uHasImage;
@@ -200,7 +203,8 @@ final class StereoRenderer implements GLSurfaceView.Renderer {
         uEye = GLES20.glGetUniformLocation(program, "uEye");
         uK = GLES20.glGetUniformLocation(program, "uK");
         uRef = GLES20.glGetUniformLocation(program, "uRef");
-        uK0 = GLES20.glGetUniformLocation(program, "uK0");
+        uS = GLES20.glGetUniformLocation(program, "uS");
+        uS0 = GLES20.glGetUniformLocation(program, "uS0");
         uMode = GLES20.glGetUniformLocation(program, "uMode");
         uSwap = GLES20.glGetUniformLocation(program, "uSwap");
         uHasImage = GLES20.glGetUniformLocation(program, "uHasImage");
@@ -314,21 +318,24 @@ final class StereoRenderer implements GLSurfaceView.Renderer {
         GLES20.glUniform1f(uSlant, slant);
         GLES20.glUniform1f(uPhase, settings.phase);
         float k = 0f;
-        float k0 = 0f;
+        float st = 0f;
+        float st0 = 0f;
         float ex = 0f;
         float ey = 0f;
         EyeTracker.State e = eye;
         if (settings.tracking && e != null && e.valid && e.zMm > 50f) {
             float mm = pixelMm;
             k = settings.gap / (e.zMm / mm);
-            k0 = settings.gap / (REFERENCE_DISTANCE_MM / mm);
+            st = Settings.STRETCH_GAP / (e.zMm / mm);
+            st0 = Settings.STRETCH_GAP / (Settings.STRETCH_REFERENCE_MM / mm);
             ex = viewW / 2f + e.xMm / mm;
             ey = viewH / 2f + e.yMm * settings.trackY / mm;
         }
         GLES20.glUniform2f(uEye, ex, ey);
         GLES20.glUniform1f(uK, k);
         GLES20.glUniform2f(uRef, viewW / 2f, viewH / 2f);
-        GLES20.glUniform1f(uK0, k0);
+        GLES20.glUniform1f(uS, st);
+        GLES20.glUniform1f(uS0, st0);
         GLES20.glUniform1i(uMode, mode);
         GLES20.glUniform1i(uSwap, settings.swap ? 1 : 0);
         GLES20.glUniform1i(uHasImage, hasImage ? 1 : 0);

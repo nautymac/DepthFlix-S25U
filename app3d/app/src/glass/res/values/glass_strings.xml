@@ -83,7 +83,4 @@
     <string name="glass_cal_done">Line-up done. Tap the screen to switch between 3D and 2D.</string>
     <string name="glass_dev_on">Developer tools shown</string>
     <string name="glass_tune_line_cal">Line up the lens</string>
-    <!-- On-phone AI learning (PhaseLearner) -->
-    <string name="glass_learn_info">AI learning: %1$d adjustments learned</string>
-    <string name="glass_learn_empty">AI learning: adjust phase or tracking and it learns from where your eyes are</string>
 </resources>

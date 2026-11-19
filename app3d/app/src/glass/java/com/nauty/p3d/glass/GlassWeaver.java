@@ -81,8 +81,6 @@ final class GlassWeaver implements Stereo3DView.Weaver {
     private volatile int viewLeft;
     private volatile int viewTop;
     private volatile EyeTracker.State eye;
-    /** Learned phase correction by eye position; null = none. */
-    private volatile PhaseLearner learner;
 
     private int uOrigin;
     private int uShift;
@@ -120,10 +118,6 @@ final class GlassWeaver implements Stereo3DView.Weaver {
     void setPlacement(int left, int top) {
         viewLeft = left;
         viewTop = top;
-    }
-
-    void setLearner(PhaseLearner l) {
-        learner = l;
     }
 
     /** 도구에서 값을 바꾸고 돌아왔을 때 새로 읽은 값으로 바꾼다. */
@@ -203,14 +197,7 @@ final class GlassWeaver implements Stereo3DView.Weaver {
         GLES20.glUniform2f(uSize, width, height);
         GLES20.glUniform1f(uPitch, settings.pitch);
         GLES20.glUniform1f(uSlant, settings.slant);
-        // Base phase plus what the on-phone learner (PhaseLearner) has learned for where the
-        // eyes are now. Zero until the viewer has adjusted something.
-        float learned = 0f;
-        EyeTracker.State le = eye;
-        if (learner != null && settings.tracking && le != null && le.valid && le.zMm > 50f) {
-            learned = learner.correction(le.xMm, le.yMm, le.zMm);
-        }
-        GLES20.glUniform1f(uPhase, settings.phase + learned);
+        GLES20.glUniform1f(uPhase, settings.phase);
         float k = 0f;
         float k0 = 0f;
         float ex = 0f;

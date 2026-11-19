@@ -64,8 +64,6 @@ final class GlassTuner extends FrameLayout {
     private final Handler repeat = new Handler(Looper.getMainLooper());
 
     private final Button toggle;
-    /** A small grey line at the bottom of the bar (AI learning status). */
-    private TextView info;
     private LinearLayout panel;     // 버튼의 람다가 읽으므로 final 이 아니다
     private boolean syncing;
 
@@ -118,11 +116,6 @@ final class GlassTuner extends FrameLayout {
             seek[i] = seekBar(i);
             panel.addView(row(i));
         }
-        info = label();
-        info.setTextSize(TypedValue.COMPLEX_UNIT_SP, 11);
-        info.setTextColor(0xFFB0B0B0);
-        info.setVisibility(GONE);
-        panel.addView(info);
         if (lineCal != null) {
             Button b = new Button(c);
             b.setText(com.nauty.p3d.R.string.glass_tune_line_cal);
@@ -153,12 +146,6 @@ final class GlassTuner extends FrameLayout {
         value[BOOST] = clamp(BOOST, boost);
         value[CONTRAST] = clamp(CONTRAST, contrast);
         sync();
-    }
-
-    /** Shows a short status line at the bottom of the bar; null hides it. */
-    void setInfo(String text) {
-        info.setText(text == null ? "" : text);
-        info.setVisibility(text == null ? GONE : VISIBLE);
     }
 
     void setOpen(boolean open) {

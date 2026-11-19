@@ -76,17 +76,6 @@ Leia 태블릿용 [DepthFlix](https://github.com/nautymac/DepthFlix)의 **갤럭
 
 위상을 조절하고 손을 떼면 바는 1.5초 뒤 저절로 닫힙니다.
 
-**4. AI 학습: 쓸수록 저절로 맞춰짐**
-
-3D가 깨져서 위상이나 추적을 조절하고 손을 떼면, 2.5초 뒤 그때의 눈 위치와 고른 값을 기록하고 **"AI 학습: 조절 N번 반영"**이라고 알려 줍니다.
-기록이 쌓이면 폰 안에서 두 가지를 배웁니다.
-
-- 렌즈 공식의 기본 위상과 추적 세기 (서로 다른 위치에서 4번 이상 맞춘 뒤부터 추적 세기도 배움)
-- 공식으로 설명되지 않는 머리 위치별 작은 오차 → 눈 위치에 따라 매 프레임 위상을 보정
-
-거리와 위치를 바꿔 가며 5~10번 맞추면, 그다음부터는 고개를 움직여도 손대지 않아도 3D가 유지됩니다.
-기록은 기기 안에만 저장되고, **처음 값으로**를 누르면 함께 지워집니다.
-
 ### 설치
 
 1. [Releases](../../releases)에서 `DepthFlix-S25Ultra-*.apk`를 받아 설치합니다.
@@ -184,17 +173,6 @@ While playing, tap **3D tune** at the top right to open the bar.
 Values are saved and shared with the 3D Fit tool. If things get messed up: **Reset to defaults** in the 3D Fit menu.
 
 After a phase change the bar closes by itself 1.5 s after you lift your finger.
-
-**4. AI learning: it fits itself the more you use it**
-
-When 3D breaks and you adjust phase or track, 2.5 s after you let go the app records where your eyes were and what you chose, and shows **"AI learning: N adjustments learned"**.
-From these records it learns, on the phone:
-
-- the base phase and tracking strength of the lens model (strength only after 4+ adjustments at different positions)
-- small per-head-position errors the model can't explain → the phase is corrected every frame from your eye position
-
-After 5–10 adjustments at different distances and positions, 3D holds as you move your head without touching anything.
-Records stay on the device and are erased by **Reset to defaults**.
 
 ### Install
 

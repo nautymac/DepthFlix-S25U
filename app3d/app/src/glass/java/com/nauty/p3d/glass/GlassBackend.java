@@ -40,6 +40,16 @@ public final class GlassBackend implements PanelBackend {
     private boolean resumed;
     private boolean askedCamera;
 
+    // ---- AI learning (PhaseLearner) ----
+    private PhaseLearner learner;
+    private volatile EyeTracker.State lastEye;
+    private final android.os.Handler ui = new android.os.Handler(android.os.Looper.getMainLooper());
+    /** Waits for the viewer to stop adjusting before learning from where they settled. */
+    private static final long SETTLE_MS = 2500;
+    private final Runnable learnNow = new Runnable() {
+        @Override public void run() { learnFromAdjustment(); }
+    };
+
     public GlassBackend() {
     }
 
@@ -76,6 +86,9 @@ public final class GlassBackend implements PanelBackend {
         settings = new Settings(a);
         weaver = new GlassWeaver(settings, pixelMm,
                 Math.max(m.widthPixels, m.heightPixels), Math.min(m.widthPixels, m.heightPixels));
+        learner = PhaseLearner.get(a);
+        learner.warmUp(settings);
+        weaver.setLearner(learner);
         view.setWeaver(weaver);
 
         // 보면서 바로 맞추는 위상·추적 세기 조절 (오른쪽 위 "3D 조절").
@@ -84,6 +97,7 @@ public final class GlassBackend implements PanelBackend {
                 new GlassTuner.Listener() {
                     @Override public void onTune(float phase, float gap, float boost, float contrast) {
                         Settings s = settings;
+                        boolean lensChanged = s.phase != phase || s.gap != gap;
                         s.phase = phase;
                         s.gap = gap;
                         s.boost = boost;
@@ -91,6 +105,11 @@ public final class GlassBackend implements PanelBackend {
                         s.save();
                         Stereo3DView v = gl;
                         if (v != null) v.requestRender();
+                        if (lensChanged) {
+                            // Learn once they let go, from where their eyes are then.
+                            ui.removeCallbacks(learnNow);
+                            ui.postDelayed(learnNow, SETTLE_MS);
+                        }
                     }
                 });
         // No line-up button on this bar: it made the bar too big over the picture. The
@@ -100,6 +119,7 @@ public final class GlassBackend implements PanelBackend {
         tuner.setVisibility(threeD ? View.VISIBLE : View.GONE);
         tracker = new EyeTracker(a, settings, new EyeTracker.Listener() {
             @Override public void onUpdate(EyeTracker.State s) {
+                lastEye = s;
                 weaver.setEye(s);
                 Stereo3DView v = gl;
                 if (v != null) v.requestRender();
@@ -132,7 +152,9 @@ public final class GlassBackend implements PanelBackend {
         if (activity != null && weaver != null) {
             // 도구에서 값을 바꾸고 돌아왔을 수 있다.
             settings = new Settings(activity);
+            if (learner != null) learner.warmUp(settings);
             weaver.setSettings(settings);
+            showLearnInfo();
             if (tuner != null) {
                 tuner.setValues(settings.phase, settings.gap, settings.boost, settings.contrast);
                 if (tuner.getParent() == null) {
@@ -144,8 +166,42 @@ public final class GlassBackend implements PanelBackend {
         updateTracking();
     }
 
+    /**
+     * The viewer has settled on a phase / strength: record it with where their eyes are and
+     * let the learner refit. The base values it writes are shown on the bar; at the current
+     * position the picture stays as they left it.
+     */
+    private void learnFromAdjustment() {
+        EyeTracker.State e = lastEye;
+        Settings s = settings;
+        if (learner == null || s == null || e == null || !e.found || !e.valid || e.zMm < 50f) {
+            return;   // no face seen: nothing to tie the choice to
+        }
+        learner.add(e.xMm, e.yMm, e.zMm, s);
+        s.save();
+        if (tuner != null) tuner.setValues(s.phase, s.gap, s.boost, s.contrast);
+        showLearnInfo();
+        // The bar has usually closed by now, so say it where it can be seen.
+        if (activity != null) {
+            android.widget.Toast.makeText(activity,
+                    activity.getString(com.nauty.p3d.R.string.glass_learn_info, learner.count()),
+                    android.widget.Toast.LENGTH_SHORT).show();
+        }
+        Stereo3DView v = gl;
+        if (v != null) v.requestRender();
+    }
+
+    private void showLearnInfo() {
+        if (tuner == null || learner == null || activity == null) return;
+        int n = learner.count();
+        tuner.setInfo(n > 0
+                ? activity.getString(com.nauty.p3d.R.string.glass_learn_info, n)
+                : activity.getString(com.nauty.p3d.R.string.glass_learn_empty));
+    }
+
     @Override
     public void onPause() {
+        ui.removeCallbacks(learnNow);
         resumed = false;
         updateTracking();
     }

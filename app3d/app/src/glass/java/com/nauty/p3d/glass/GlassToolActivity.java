@@ -86,6 +86,10 @@ public class GlassToolActivity extends Activity {
     private final java.util.ArrayList<float[]> fitSamples = new java.util.ArrayList<>();
     private TextView phaseBadge;
     private LinearLayout guidePanel;
+
+    // ---- AI learning (PhaseLearner): learns from one-finger phase / strength drags ----
+    private PhaseLearner learner;
+    private final Runnable learnNow = this::learnFromAdjustment;
     private final Runnable hideBadge = () -> phaseBadge.setVisibility(View.GONE);
     private final java.util.List<File> photos = new java.util.ArrayList<>();
     private int photoIndex;
@@ -128,6 +132,9 @@ public class GlassToolActivity extends Activity {
         // Opens in 2D with a short guide on top; one tap switches to 3D (and hides the guide).
         settings.mode = Settings.MODE_2D;
         renderer = new StereoRenderer(settings);
+        learner = PhaseLearner.get(this);
+        learner.warmUp(settings);
+        renderer.setLearner(learner);
         renderer.setPixelMm(pixelMm);
         glView = new GLSurfaceView(this);
         glView.setEGLContextClientVersion(2);
@@ -214,6 +221,11 @@ public class GlassToolActivity extends Activity {
                 settings.save();
                 renderer.requestRender();
                 showPhaseBadge();
+                if (settings.calStep < 0) {
+                    // Learn once the finger has been off a moment, from where the eyes are.
+                    repeat.removeCallbacks(learnNow);
+                    repeat.postDelayed(learnNow, 2500);
+                }
                 return true;
             }
         });
@@ -439,6 +451,7 @@ public class GlassToolActivity extends Activity {
         r.addView(button(getString(R.string.glass_btn_restore), v -> {
             // Back to the values recorded in CALIBRATION.md (the Settings defaults).
             settings.resetCalibration();
+            learner.clear();
             settings.save();
             renderer.requestRender();
             Toast.makeText(this, fmt(R.string.glass_restored,
@@ -556,6 +569,21 @@ public class GlassToolActivity extends Activity {
         refreshMenu();
         updateGuide();
         renderer.requestRender();
+    }
+
+    /** The viewer let go of a phase / strength drag: learn from where their eyes are. */
+    private void learnFromAdjustment() {
+        EyeTracker.State e = lastEye;
+        if (learner == null || e == null || !e.found || !e.valid || e.zMm < 50f) {
+            return;
+        }
+        learner.add(e.xMm, e.yMm, e.zMm, settings);
+        settings.save();
+        renderer.requestRender();
+        phaseBadge.setText(getString(R.string.glass_learn_info, learner.count()));
+        phaseBadge.setVisibility(View.VISIBLE);
+        repeat.removeCallbacks(hideBadge);
+        repeat.postDelayed(hideBadge, 1500);
     }
 
     /** The how-to shows only on the plain 2D picture, never over 3D or calibration. */

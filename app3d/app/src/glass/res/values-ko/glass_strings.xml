@@ -78,4 +78,7 @@
     <string name="glass_cal_done">줄 맞추기 완료. 화면을 터치하면 3D와 2D가 바뀝니다.</string>
     <string name="glass_dev_on">개발자 메뉴 표시</string>
     <string name="glass_tune_line_cal">가로·세로 줄 맞추기</string>
+    <!-- 폰 안 AI 학습 (PhaseLearner) -->
+    <string name="glass_learn_info">AI 학습: 조절 %1$d번 반영</string>
+    <string name="glass_learn_empty">AI 학습: 위상·추적을 조절하면 눈 위치와 함께 배웁니다</string>
 </resources>

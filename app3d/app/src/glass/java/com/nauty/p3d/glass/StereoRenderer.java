@@ -121,6 +121,12 @@ final class StereoRenderer implements GLSurfaceView.Renderer {
 
     private volatile Bitmap pending;
     private volatile EyeTracker.State eye;
+    /** Learned phase correction by eye position (PhaseLearner); null = none. */
+    private volatile PhaseLearner learner;
+
+    void setLearner(PhaseLearner l) {
+        learner = l;
+    }
     private volatile float pixelMm = 0.05f;
     private int program;
     private int texture;
@@ -312,7 +318,14 @@ final class StereoRenderer implements GLSurfaceView.Renderer {
         GLES20.glUniform4f(uContent, (viewW - cw) / 2f, (viewH - ch) / 2f, cw, ch);
         GLES20.glUniform1f(uPitch, pitch);
         GLES20.glUniform1f(uSlant, slant);
-        GLES20.glUniform1f(uPhase, settings.phase);
+        // Base phase plus what the on-phone learner (PhaseLearner) has learned for where the
+        // eyes are now. Zero until the viewer has adjusted something.
+        float learned = 0f;
+        EyeTracker.State le = eye;
+        if (learner != null && settings.tracking && le != null && le.valid && le.zMm > 50f) {
+            learned = learner.correction(le.xMm, le.yMm, le.zMm);
+        }
+        GLES20.glUniform1f(uPhase, settings.phase + learned);
         float k = 0f;
         float k0 = 0f;
         float ex = 0f;

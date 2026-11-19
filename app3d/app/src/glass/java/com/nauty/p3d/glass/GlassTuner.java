@@ -64,8 +64,17 @@ final class GlassTuner extends FrameLayout {
     private final Handler repeat = new Handler(Looper.getMainLooper());
 
     private final Button toggle;
+    /** A small grey line at the bottom of the bar (AI learning status). */
+    private TextView info;
     private LinearLayout panel;     // 버튼의 람다가 읽으므로 final 이 아니다
     private boolean syncing;
+
+    /** After a phase change the bar closes by itself this long after the finger lifts. */
+    private static final long AUTO_CLOSE_MS = 1500;
+    private final Runnable autoClose = () -> setOpen(false);
+    /** A finger is down on the bar or its button: never close under it. */
+    private boolean touching;
+    private boolean phaseChanged;
 
     GlassTuner(Context c, float phase, float gap, float boost, float contrast,
                float minGap, float maxGap, Listener listener) {
@@ -109,6 +118,11 @@ final class GlassTuner extends FrameLayout {
             seek[i] = seekBar(i);
             panel.addView(row(i));
         }
+        info = label();
+        info.setTextSize(TypedValue.COMPLEX_UNIT_SP, 11);
+        info.setTextColor(0xFFB0B0B0);
+        info.setVisibility(GONE);
+        panel.addView(info);
         if (lineCal != null) {
             Button b = new Button(c);
             b.setText(com.nauty.p3d.R.string.glass_tune_line_cal);
@@ -141,7 +155,15 @@ final class GlassTuner extends FrameLayout {
         sync();
     }
 
+    /** Shows a short status line at the bottom of the bar; null hides it. */
+    void setInfo(String text) {
+        info.setText(text == null ? "" : text);
+        info.setVisibility(text == null ? GONE : VISIBLE);
+    }
+
     void setOpen(boolean open) {
+        removeCallbacks(autoClose);
+        phaseChanged = false;
         panel.setVisibility(open ? VISIBLE : GONE);
         toggle.setText(open ? com.nauty.p3d.R.string.glass_tune_close : com.nauty.p3d.R.string.glass_tune);
     }
@@ -149,6 +171,10 @@ final class GlassTuner extends FrameLayout {
     private void set(int which, float v) {
         value[which] = which == PHASE ? wrap(v) : clamp(which, v);
         sync();
+        if (which == PHASE) {
+            phaseChanged = true;
+            if (!touching) armAutoClose();
+        }
         listener.onTune(value[PHASE], value[GAP], value[BOOST], value[CONTRAST]);
     }
 
@@ -254,7 +280,36 @@ final class GlassTuner extends FrameLayout {
     @Override
     protected void onDetachedFromWindow() {
         repeat.removeCallbacksAndMessages(null);
+        removeCallbacks(autoClose);
         super.onDetachedFromWindow();
+    }
+
+    private void armAutoClose() {
+        removeCallbacks(autoClose);
+        if (panel.getVisibility() == VISIBLE) postDelayed(autoClose, AUTO_CLOSE_MS);
+    }
+
+    /**
+     * Holds the auto-close while a finger is on the bar (slider drag, held −/+), and starts
+     * it when the finger lifts after a phase change. Touches the bar does not take (the
+     * empty area, which goes to the picture below) are ignored.
+     */
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent e) {
+        boolean handled = super.dispatchTouchEvent(e);
+        int a = e.getActionMasked();
+        if (a == MotionEvent.ACTION_DOWN) {
+            if (handled) {
+                touching = true;
+                removeCallbacks(autoClose);
+            }
+        } else if (a == MotionEvent.ACTION_UP || a == MotionEvent.ACTION_CANCEL) {
+            if (touching) {
+                touching = false;
+                if (phaseChanged) armAutoClose();
+            }
+        }
+        return handled;
     }
 
     /** 바와 버튼 밖의 빈 곳은 터치를 가져가지 않는다. */

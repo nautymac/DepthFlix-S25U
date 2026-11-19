@@ -83,4 +83,11 @@
     <string name="glass_cal_done">Line-up done. Tap the screen to switch between 3D and 2D.</string>
     <string name="glass_dev_on">Developer tools shown</string>
     <string name="glass_tune_line_cal">Line up the lens</string>
+    <string name="glass_reset_title">Reset to defaults?</string>
+    <string name="glass_reset_message">Line-up, phase, tracking, brightness and contrast go back to their defaults. You can undo it in the next window.</string>
+    <string name="glass_reset_ok">Reset</string>
+    <string name="glass_reset_cancel">Cancel</string>
+    <string name="glass_reset_done">OK</string>
+    <string name="glass_reset_undo">Undo</string>
+    <string name="glass_reset_undone">Back to your previous values</string>
 </resources>

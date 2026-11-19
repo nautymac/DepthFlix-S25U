@@ -451,15 +451,7 @@ public class GlassToolActivity extends Activity {
         nextButton = button(getString(R.string.glass_btn_next), v -> stepPhoto(1));
         r.addView(nextButton);
         r.addView(button(getString(R.string.glass_btn_line_cal), v -> startCalibration(0)));
-        r.addView(button(getString(R.string.glass_btn_restore), v -> {
-            // Back to the values recorded in CALIBRATION.md (the Settings defaults).
-            settings.resetCalibration();
-            settings.save();
-            syncTuner();
-            renderer.requestRender();
-            Toast.makeText(this, fmt(R.string.glass_restored,
-                    settings.phase, settings.gap, settings.pitch, settings.slant), Toast.LENGTH_LONG).show();
-        }));
+        r.addView(button(getString(R.string.glass_btn_restore), v -> confirmReset()));
         Button close = button(getString(R.string.glass_btn_close), v -> menu.setVisibility(View.GONE));
         r.addView(close);
         // Holding Close for 3 s shows the developer row (a normal tap still just closes).
@@ -494,6 +486,50 @@ public class GlassToolActivity extends Activity {
         });
         devRow.addView(trackButton);
         return box;
+    }
+
+    /**
+     * "Reset to defaults" asks first and can be undone right after: one stray tap once
+     * wiped a phone's whole tuning.
+     */
+    private void confirmReset() {
+        new android.app.AlertDialog.Builder(this)
+                .setTitle(R.string.glass_reset_title)
+                .setMessage(R.string.glass_reset_message)
+                .setPositiveButton(R.string.glass_reset_ok, (d, w) -> resetToDefaults())
+                .setNegativeButton(R.string.glass_reset_cancel, null)
+                .show();
+    }
+
+    private void resetToDefaults() {
+        final float[] before = settings.snapshot();
+        // Back to the values recorded in CALIBRATION.md (the Settings defaults).
+        settings.resetCalibration();
+        afterReset();
+        settings.save();
+        syncTuner();
+        renderer.requestRender();
+        new android.app.AlertDialog.Builder(this)
+                .setMessage(fmt(R.string.glass_restored,
+                        settings.phase, settings.gap, settings.pitch, settings.slant))
+                .setPositiveButton(R.string.glass_reset_done, null)
+                .setNegativeButton(R.string.glass_reset_undo, (d, w) -> {
+                    settings.restore(before);
+                    undoReset();
+                    settings.save();
+                    syncTuner();
+                    renderer.requestRender();
+                    Toast.makeText(this, R.string.glass_reset_undone, Toast.LENGTH_SHORT).show();
+                })
+                .show();
+    }
+
+    /** Anything else a reset clears (nothing here). */
+    private void afterReset() {
+    }
+
+    /** Undoes {@link #afterReset}. */
+    private void undoReset() {
     }
 
     private void refreshMenu() {

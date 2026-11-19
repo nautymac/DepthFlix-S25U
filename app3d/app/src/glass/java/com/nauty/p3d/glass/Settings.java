@@ -117,6 +117,26 @@ final class Settings {
         }
     }
 
+    /** The values {@link #resetCalibration} changes, so a reset can be undone. */
+    float[] snapshot() {
+        return new float[]{pitch, slant, phase, gap, trackY, boost, contrast,
+                swap ? 1 : 0, subpixel ? 1 : 0, flipX ? 1 : 0, flipY ? 1 : 0};
+    }
+
+    void restore(float[] s) {
+        pitch = s[0];
+        slant = s[1];
+        phase = s[2];
+        gap = s[3];
+        trackY = s[4];
+        boost = s[5];
+        contrast = s[6];
+        swap = s[7] != 0;
+        subpixel = s[8] != 0;
+        flipX = s[9] != 0;
+        flipY = s[10] != 0;
+    }
+
     void resetCalibration() {
         pitch = DEFAULT_PITCH;
         slant = DEFAULT_SLANT;

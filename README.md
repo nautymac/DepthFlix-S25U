@@ -133,7 +133,7 @@ Leia 태블릿용 [DepthFlix](https://github.com/nautymac/DepthFlix)를 **갤럭
 
 **3. 보면서 맞추기: 3D 조절**
 
-재생 중 오른쪽 위 **3D 조절**을 누르면 바가 열립니다(위 "3D 조절 바" 표 참고). 엉망이 되면 3D 맞추기 메뉴의 **처음 값으로**를 누릅니다.
+재생 중 오른쪽 위 **3D 조절**을 누르면 바가 열립니다(위 "3D 조절 바" 표 참고). 엉망이 되면 3D 맞추기 메뉴의 **처음 값으로**를 누릅니다. 한 번 더 묻고, 바로 다음 창에서 **되돌리기**도 할 수 있습니다.
 
 ![재생 중 3D 조절 바](docs/images/player-3d-tune.png)
 
@@ -295,7 +295,7 @@ In 3D setup, **press and hold one finger (about 1 s)** for the menu at the botto
 
 **3. Fine-tuning while watching: 3D tune**
 
-While playing, tap **3D tune** at the top right (see the "3D tune bar" table above). If things get messed up: **Reset to defaults** in the 3D setup menu.
+While playing, tap **3D tune** at the top right (see the "3D tune bar" table above). If things get messed up: **Reset to defaults** in the 3D setup menu. It asks first, and the next window offers **Undo**.
 
 ![The 3D tune bar while playing](docs/images/player-3d-tune.png)
 

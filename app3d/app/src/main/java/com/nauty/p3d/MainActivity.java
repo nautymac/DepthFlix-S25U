@@ -171,7 +171,7 @@ public class MainActivity extends Activity {
                         reload();
                     }
                 } else if (pos >= 0 && pos < uris.size()) {
-                    open(uris.get(pos), titles.get(pos));
+                    openFromList(uris.get(pos), titles.get(pos));
                 }
             }
         });
@@ -1102,17 +1102,31 @@ public class MainActivity extends Activity {
         startActivity(i);
     }
 
+    /** 기기 목록에서 고른 항목: 사진 보기 중이면 사진으로, 이전/다음은 그 폴더 안에서. */
+    private void openFromList(Uri uri, String title) {
+        if (kind != MediaLibrary.Kind.IMAGE) { open(uri, title); return; }
+        Intent i = new Intent(this, PlayerActivity.class);
+        i.setData(uri);
+        i.putExtra(PlayerActivity.EXTRA_TITLE, title);
+        i.putExtra(PlayerActivity.EXTRA_PHOTO, true);
+        i.putExtra(PlayerActivity.EXTRA_FOLDER, openFolder);
+        startActivity(i);
+    }
+
     private void open(Uri uri, String title) { open(uri, title, null); }
 
+    /**
+     * 링크·유튜브·DLNA·SMB 처럼 목록 밖에서 여는 것. 화면이 "사진 보기" 에 있어도
+     * 유튜브 실시간 방송 같은 영상은 영상으로 연다 — 사진인지는 파일 이름으로만 본다.
+     */
     private void open(Uri uri, String title, String subtitlePath) {
         Intent i = new Intent(this, PlayerActivity.class);
         i.setData(uri);
         i.putExtra(PlayerActivity.EXTRA_TITLE, title);
         if (subtitlePath != null) i.putExtra(PlayerActivity.EXTRA_SUBTITLE_PATH, subtitlePath);
-        if (kind == MediaLibrary.Kind.IMAGE) {
+        if (subtitlePath == null && (MediaLibrary.isPhotoName(title)
+                || MediaLibrary.isPhotoName(uri.getLastPathSegment()))) {
             i.putExtra(PlayerActivity.EXTRA_PHOTO, true);
-            // 이전/다음은 지금 보고 있는 폴더 안에서만 돈다.
-            i.putExtra(PlayerActivity.EXTRA_FOLDER, openFolder);
         }
         startActivity(i);
     }

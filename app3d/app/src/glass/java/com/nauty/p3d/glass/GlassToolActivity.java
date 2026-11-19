@@ -86,6 +86,8 @@ public class GlassToolActivity extends Activity {
     private final java.util.ArrayList<float[]> fitSamples = new java.util.ArrayList<>();
     private TextView phaseBadge;
     private LinearLayout guidePanel;
+    /** The same "3D tune" bar as the player (phase, strength, brightness, contrast). */
+    private GlassTuner tuner;
     private final Runnable hideBadge = () -> phaseBadge.setVisibility(View.GONE);
     private final java.util.List<File> photos = new java.util.ArrayList<>();
     private int photoIndex;
@@ -274,6 +276,18 @@ public class GlassToolActivity extends Activity {
         FrameLayout.LayoutParams gp = new FrameLayout.LayoutParams(dp(580),
                 ViewGroup.LayoutParams.WRAP_CONTENT, Gravity.CENTER);
         root.addView(guidePanel, gp);
+        // Top right, as in the player; shown only on the 3D picture (see updateGuide).
+        tuner = new GlassTuner(this, settings.phase, settings.gap, settings.boost, settings.contrast,
+                Settings.MIN_GAP, Settings.MAX_GAP, (phase, gap, boost, contrast) -> {
+                    settings.phase = phase;
+                    settings.gap = gap;
+                    settings.boost = boost;
+                    settings.contrast = contrast;
+                    settings.save();
+                    renderer.requestRender();
+                });
+        tuner.setVisibility(View.GONE);
+        root.addView(tuner, match());
         setContentView(root);
 
         renderer.setImage(SampleImage.create());
@@ -401,6 +415,7 @@ public class GlassToolActivity extends Activity {
 
     /** Shows the phase at the bottom for a moment while it is being dragged. */
     private void showPhaseBadge() {
+        syncTuner();
         phaseBadge.setText(fmt(R.string.glass_phase_badge, settings.phase, settings.gap));
         phaseBadge.setVisibility(View.VISIBLE);
         repeat.removeCallbacks(hideBadge);
@@ -440,6 +455,7 @@ public class GlassToolActivity extends Activity {
             // Back to the values recorded in CALIBRATION.md (the Settings defaults).
             settings.resetCalibration();
             settings.save();
+            syncTuner();
             renderer.requestRender();
             Toast.makeText(this, fmt(R.string.glass_restored,
                     settings.phase, settings.gap, settings.pitch, settings.slant), Toast.LENGTH_LONG).show();
@@ -563,6 +579,19 @@ public class GlassToolActivity extends Activity {
         if (guidePanel == null) return;
         boolean show = settings.mode == Settings.MODE_2D && settings.calStep < 0;
         guidePanel.setVisibility(show ? View.VISIBLE : View.GONE);
+        if (tuner != null) {
+            boolean tune = settings.mode == Settings.MODE_3D && settings.calStep < 0;
+            if (!tune) tuner.setOpen(false);
+            else syncTuner();
+            tuner.setVisibility(tune ? View.VISIBLE : View.GONE);
+        }
+    }
+
+    /** The bar shows what a drag, the line-up or a reset has just set. */
+    private void syncTuner() {
+        if (tuner != null) {
+            tuner.setValues(settings.phase, settings.gap, settings.boost, settings.contrast);
+        }
     }
 
     private float value() {

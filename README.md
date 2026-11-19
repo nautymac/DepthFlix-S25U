@@ -26,7 +26,7 @@ Leia 태블릿용 [DepthFlix](https://github.com/nautymac/DepthFlix)의 **갤럭
 | **정중앙 배치** | 카메라 구멍과 상관없이 그림을 화면 정중앙에 같은 여백으로 놓습니다. |
 | **USB 드라이브** | 목록 위 **USB** 버튼. 처음 한 번 드라이브를 허락하면 폴더·영상·사진을 바로 둘러보고 3D로 엽니다. 버튼을 길게 누르면 다른 드라이브를 고릅니다. |
 | **자막** | 영상 옆의 .srt/.smi 등을 자동으로 붙입니다(USB 포함, 한국어 우선). 없으면 영상 안의 자막을 자동으로 켭니다. |
-| **3D 맞추기** | 목록 위 **3D 맞추기** 버튼: 2D 안내 화면에서 큰 버튼 하나로 가로·세로 줄을 맞추고, SBS 사진을 3D로 봅니다. 플레이어와 같은 값을 씁니다. |
+| **3D 맞추기** | 목록 위 **3D 맞추기** 버튼: 2D 안내 화면에서 큰 버튼 하나로 가로·세로 줄을 맞추고, SBS 사진을 3D로 봅니다. 3D 화면 오른쪽 위 **3D 조절**로 위상·추적 세기·밝기·대비도 맞춥니다. 플레이어와 같은 값을 씁니다. |
 | **그 밖에** | SMB·DLNA·URL 재생, DTS·AC3 소리 재생(FFmpeg), 이어 보기 등 DepthFlix 기능 그대로. |
 
 ### 사용법
@@ -124,7 +124,7 @@ The film is **only a lens**: the phone has no 3D engine. So the app does it itse
 | **Dead-centre placement** | The picture sits in the exact centre of the panel with equal bars, whatever the camera cutout does to the window. |
 | **USB drives** | The **USB** button above the list. Allow the drive once, then browse its folders, videos and photos and open them in 3D. Long-press to pick another drive. |
 | **Subtitles** | Picks up .srt/.smi files next to the video automatically (USB included, Korean first); otherwise turns on the video's built-in subtitles. |
-| **3D setup (3D Fit)** | The **3D setup** button on the list screen: a 2D guide with one big button to line up the lens (horizontal, vertical), plus an SBS photo viewer; the player uses the same values. |
+| **3D setup (3D Fit)** | The **3D setup** button on the list screen: a 2D guide with one big button to line up the lens (horizontal, vertical), plus an SBS photo viewer with the same **3D tune** bar (phase, tracking strength, brightness, contrast) at the top right; the player uses the same values. |
 | **And the rest** | SMB, DLNA and URL playback, DTS/AC3 audio (FFmpeg), resume, and the other DepthFlix features. |
 
 ### How to use

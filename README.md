@@ -288,15 +288,15 @@ Saved, and shared with the 3D setup tool. After a phase change the bar closes by
 
 Tap **3D setup** at the top of the list screen. It opens in 2D with a short guide; built-in pictures give you 3D to look at right away (long-press, then ◀ ▶). (The screenshots show the Korean UI; on an English phone the app is in English.)
 
-![The 3D setup button on the list screen](docs/images/list-buttons.png)
+![The 3D setup button on the list screen](docs/images/list-buttons-en.png)
 
-![First screen of 3D setup: guide and line-up button](docs/images/tool-guide.png)
+![First screen of 3D setup: guide and line-up button](docs/images/tool-guide-en.png)
 
 - Hold the phone in landscape with the **front camera on the left**, always.
 - The **green dot at the top left** (camera in use) must be on: that is the eye tracking working.
 - From 30–40 cm, tap the big green button **Line up the lens**.
 
-![Line-up screen: adjust with the slider or −/+, then Save](docs/images/tool-lineup-step1.png)
+![Line-up screen: adjust with the slider or −/+, then Save](docs/images/tool-lineup-step1-en.png)
 
 Adjust with the slider or −/+ until the red stripes you see through the film run **parallel to the middle line**, then tap **Save**. Step 1 (horizontal) then step 2 (vertical); after step 2 it goes straight to 3D.
 
@@ -306,7 +306,7 @@ Adjust with the slider or −/+ until the red stripes you see through the film r
 
 In 3D setup, **press and hold one finger (about 1 s)** for the menu at the bottom: add photos · ◀ prev / next ▶ · line up the lens · reset to defaults · close.
 
-![The menu from a one-finger long press](docs/images/tool-menu.png)
+![The menu from a one-finger long press](docs/images/tool-menu-en.png)
 
 **2. Watching**
 
@@ -319,7 +319,7 @@ In 3D setup, **press and hold one finger (about 1 s)** for the menu at the botto
 
 While playing, tap **3D tune** at the top right (see the "3D tune bar" table above). If things get messed up: **Reset to defaults** in the 3D setup menu. It asks first, and the next window offers **Undo**.
 
-![The 3D tune bar while playing](docs/images/player-3d-tune.png)
+![The 3D tune bar while playing](docs/images/player-3d-tune-en.png)
 
 ### Install
 

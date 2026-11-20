@@ -20,6 +20,10 @@ Leia 태블릿용 [DepthFlix](https://github.com/nautymac/DepthFlix)를 **갤럭
 - **눈 추적**: 앞카메라로 두 눈의 홍채를 초당 약 60번 찾습니다. 머리를 움직여도 3D가 유지되도록 위빙을 옮깁니다.
 - **AI 깊이**: 2D 영상·사진은 AI 모델(Depth Anything V2)이 장면의 깊이를 읽어 두 눈 그림을 만듭니다. S25 Ultra의 NPU(AI 전용 칩)에서 한 장 약 35ms가 걸립니다.
 
+### v1.4.3에서 바뀐 것
+
+- **사진을 밀어서 넘기기**: 사진을 보다가 화면을 왼쪽으로 밀면 다음 사진, 오른쪽으로 밀면 이전 사진입니다. 밀어서 넘길 때는 파일 이름 알림이 뜨지 않아 그림만 이어서 볼 수 있습니다. ◀◀ ▶▶ 버튼은 예전처럼 이름을 보여 줍니다.
+
 ### v1.4.2에서 바뀐 것
 
 - **거리에 따른 3D 보정**: 가까이 보거나 멀리 볼 때 화면 양쪽 끝의 3D가 어긋나던 것을 고쳤습니다. 화면 가운데뿐 아니라 가장자리까지 고르게 맞습니다.
@@ -50,7 +54,7 @@ Leia 태블릿용 [DepthFlix](https://github.com/nautymac/DepthFlix)를 **갤럭
 | **자동 판별** | SBS·TB(half·full)·2D를 그림의 화소로 판별합니다. 아주 넓은 영상(32:9 등)은 해상도만으로 SBS로 봅니다. 틀리면 설정에서 직접 고르고, **↺ 자동 판별로 되돌리기**로 되돌립니다. |
 | **AI 깊이 (2D→3D)** | 2D 영상·사진은 AI 깊이로 3D가 됩니다. 아래 재생바의 **AI 깊이 켜짐/꺼짐** 버튼으로 끄면 예전 기울기 방식이 됩니다(모든 영상에 공통으로 기억). 입체감 세기는 설정의 **깊이** 슬라이더로 조절합니다. 모델을 불러오는 첫 1초 남짓, 또는 모델을 쓸 수 없을 때는 예전 기울기 방식으로 보입니다. |
 | **3D ↔ 2D** | 화면을 한 번 터치하면 3D와 2D가 바뀝니다. 2D일 때는 카메라(눈 추적)도 꺼집니다. |
-| **사진** | 목록 위 **사진 보기**로 바꾸면 폴더별 사진을 3D로 봅니다. 아래 ◀◀ ▶▶로 이전·다음 사진으로 넘깁니다. |
+| **사진** | 목록 위 **사진 보기**로 바꾸면 폴더별 사진을 3D로 봅니다. 아래 ◀◀ ▶▶로 이전·다음 사진으로 넘깁니다. 화면을 **좌우로 밀어도** 넘어갑니다(왼쪽으로 밀면 다음 사진). 밀어서 넘길 때는 파일 이름이 뜨지 않습니다. |
 
 **화면**
 
@@ -189,6 +193,10 @@ The film is **only a lens**: the phone has no 3D engine, so the app does three t
 - **Eye tracking**: the front camera finds both irises about 60 times a second and moves the weave with your head, so 3D holds as you move.
 - **AI depth**: for 2D videos and photos an AI model (Depth Anything V2) reads the depth of the scene and builds the two eyes' pictures, about 35 ms a frame on the S25 Ultra's NPU (its AI chip).
 
+### What's new in v1.4.3
+
+- **Swipe through photos**: while viewing a photo, swipe left for the next one and right for the previous one. A swipe does not pop up the file name, so you see only the pictures. The ◀◀ ▶▶ buttons still show the name.
+
 ### What's new in v1.4.2
 
 - **3D corrected for viewing distance**: the left and right edges of the screen no longer drift out of 3D when you watch from closer or farther away. The whole screen lines up, not only the middle.
@@ -219,7 +227,7 @@ The film is **only a lens**: the phone has no 3D engine, so the app does three t
 | **Auto detection** | Tells SBS, TB (half and full) and 2D apart from the pixels; very wide videos (32:9 and the like) are SBS by their size alone. If it is wrong, pick the layout in Settings; **↺ Back to automatic detection** undoes that. |
 | **AI depth (2D→3D)** | 2D videos and photos get their 3D from AI depth. The **AI depth on/off** button on the play bar switches it off for the old tilt (one choice for every video). Set the strength with the **Depth** slider in Settings. For the first second or so while the model loads, or if it cannot run, the old tilt is used. |
 | **3D ↔ 2D** | Tap the screen once. In 2D the camera (eye tracking) is off too. |
-| **Photos** | Switch the list to **Photos** to browse photo folders in 3D; ◀◀ ▶▶ at the bottom go to the previous/next photo. |
+| **Photos** | Switch the list to **Photos** to browse photo folders in 3D; ◀◀ ▶▶ at the bottom go to the previous/next photo. You can also **swipe left or right** on the picture (left = next); a swipe does not pop up the file name. |
 
 **Picture**
 

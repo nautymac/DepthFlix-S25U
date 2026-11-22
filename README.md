@@ -387,6 +387,8 @@ Play a side-by-side video in another app such as YouTube, and watch that screen 
 
    ![The 3D tile in Quick Settings](docs/images/screen3d-tile.png)
 
+   ![The Screen 3D button on the list screen (portrait)](docs/images/screen3d-list-button-en.png)
+
    - The first time DepthFlix opens it asks once whether to add the tile. Android does not let an app add its own tile, so you have to tap **Add** yourself. To add it later, drag "3D" in from the panel's edit screen.
 2. **Pick the app**: when the screen-sharing window appears, leave it on **"Share one app"**, tap **Next**, and choose the app to watch in 3D.
    - "Share entire screen" does not work: the 3D picture the app draws would be captured again and fill the screen with thin lines. If you choose it, the app notices and asks again.
@@ -396,6 +398,8 @@ Play a side-by-side video in another app such as YouTube, and watch that screen 
 
    - The button can be dragged anywhere. A long press ends Screen 3D (so does tapping the tile again).
 4. **Adjust**: while in 3D, **swipe from right to left** and a menu comes in on the right. It hides itself shortly after you change something.
+
+   ![The menu, opened while watching in 3D](docs/images/screen3d-menu-en.png)
 
    | Menu | What it does |
    |---|---|

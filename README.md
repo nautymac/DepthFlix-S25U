@@ -74,7 +74,7 @@ Leia 태블릿용 [DepthFlix](https://github.com/nautymac/DepthFlix)를 **갤럭
 
 | 기능 | 설명 |
 |---|---|
-| **화면 3D** | 유튜브 등 **다른 앱의 화면**을 3D로 봅니다. SBS 영상은 그대로, 2D 화면은 AI 깊이로 바꿉니다. 빠른 설정의 **3D** 타일이나 목록의 **화면 3D** 버튼으로 켭니다. 폰 화면 해상도가 3120×1440(WQHD+)이고 앱이 화면 전체를 채울 때만 됩니다. |
+| **화면 3D** | 유튜브 등 **다른 앱의 화면**을 3D로 봅니다. SBS 영상은 그대로, 2D 화면은 AI 깊이로 바꿉니다. 빠른 설정의 **3D** 타일이나 목록의 **화면 3D** 버튼으로 켭니다. 타일은 **어느 화면에서나** 끌어내려 누를 수 있어, 보던 앱을 떠나지 않고 3D를 켭니다. 폰 화면 해상도가 3120×1440(WQHD+)이고 앱이 화면 전체를 채울 때만 됩니다. |
 | **자동 판별** | SBS·TB(half·full)·2D를 그림의 화소로 판별합니다. 아주 넓은 영상(32:9 등)은 해상도만으로 SBS로 봅니다. 틀리면 설정에서 직접 고르고, **↺ 자동 판별로 되돌리기**로 되돌립니다. |
 | **AI 깊이 (2D→3D)** | 2D 영상·사진은 AI 깊이로 3D가 됩니다. 아래 재생바의 **AI 깊이 켜짐/꺼짐** 버튼으로 끄면 예전 기울기 방식이 됩니다(모든 영상에 공통으로 기억). 입체감 세기는 설정의 **깊이** 슬라이더로 조절합니다. 모델을 불러오는 첫 1초 남짓, 또는 모델을 쓸 수 없을 때는 예전 기울기 방식으로 보입니다. |
 | **3D ↔ 2D** | 화면을 한 번 터치하면 3D와 2D가 바뀝니다. 2D일 때는 카메라(눈 추적)도 꺼집니다. |
@@ -182,6 +182,7 @@ Leia 태블릿용 [DepthFlix](https://github.com/nautymac/DepthFlix)를 **갤럭
 
    ![목록 화면의 화면 3D 버튼 (세로 화면)](docs/images/screen3d-list-button.png)
 
+   - **타일은 어디서나 누를 수 있습니다.** 홈 화면이든 유튜브든 브라우저든 게임이든, 지금 보고 있는 화면에서 위를 끌어내려 **3D** 타일만 누르면 됩니다. DepthFlix를 먼저 열 필요가 없고, 보던 앱을 떠나지도 않습니다.
    - 타일은 DepthFlix를 처음 열 때 추가할지 한 번 묻습니다. 안드로이드는 앱이 타일을 스스로 넣지 못하게 하므로, **추가**를 직접 눌러야 합니다. 나중에 넣으려면 빠른 설정의 편집 화면에서 "3D"를 끌어다 놓습니다.
 2. **볼 앱 고르기**: 화면 공유 창이 뜨면 **"앱 하나 공유"** 그대로 두고 **다음**을 누른 뒤, 3D로 볼 앱을 고릅니다.
    - "전체 화면 공유"로는 되지 않습니다. 앱이 그린 3D 화면이 다시 캡처되어 가는 선으로 가득 차기 때문입니다. 그렇게 고르면 앱이 알아채고 다시 묻습니다.
@@ -309,7 +310,7 @@ Put the **3D** tile in the Quick Settings panel (swipe down from the top of the 
 
 | Feature | What it does |
 |---|---|
-| **Screen 3D** | Watch **another app's screen** (YouTube and so on) in 3D: SBS videos as they are, 2D screens by AI depth. Start it from the **3D** tile in Quick Settings or the **Screen 3D** button on the list. Works only with the phone's screen resolution at 3120×1440 (WQHD+) and the app filling the screen. |
+| **Screen 3D** | Watch **another app's screen** (YouTube and so on) in 3D: SBS videos as they are, 2D screens by AI depth. Start it from the **3D** tile in Quick Settings or the **Screen 3D** button on the list. The tile can be pulled down and tapped **from any screen**, so 3D starts without leaving the app you are watching. Works only with the phone's screen resolution at 3120×1440 (WQHD+) and the app filling the screen. |
 | **Auto detection** | Tells SBS, TB (half and full) and 2D apart from the pixels; very wide videos (32:9 and the like) are SBS by their size alone. If it is wrong, pick the layout in Settings; **↺ Back to automatic detection** undoes that. |
 | **AI depth (2D→3D)** | 2D videos and photos get their 3D from AI depth. The **AI depth on/off** button on the play bar switches it off for the old tilt (one choice for every video). Set the strength with the **Depth** slider in Settings. For the first second or so while the model loads, or if it cannot run, the old tilt is used. |
 | **3D ↔ 2D** | Tap the screen once. In 2D the camera (eye tracking) is off too. |
@@ -417,6 +418,7 @@ Play a side-by-side video in another app such as YouTube, and watch that screen 
 
    ![The Screen 3D button on the list screen (portrait)](docs/images/screen3d-list-button-en.png)
 
+   - **The tile works from anywhere.** On the home screen, in YouTube, a browser or a game: swipe down from the top of whatever you are looking at and tap **3D**. There is no need to open DepthFlix first, and you do not leave the app you are watching.
    - The first time DepthFlix opens it asks once whether to add the tile. Android does not let an app add its own tile, so you have to tap **Add** yourself. To add it later, drag "3D" in from the panel's edit screen.
 2. **Pick the app**: when the screen-sharing window appears, leave it on **"Share one app"**, tap **Next**, and choose the app to watch in 3D.
    - "Share entire screen" does not work: the 3D picture the app draws would be captured again and fill the screen with thin lines. If you choose it, the app notices and asks again.

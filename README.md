@@ -21,6 +21,20 @@ Leia 태블릿용 [DepthFlix](https://github.com/nautymac/DepthFlix)를 **갤럭
 - **눈 추적**: 앞카메라로 두 눈의 홍채를 초당 약 60번 찾습니다. 머리를 움직여도 3D가 유지되도록 위빙을 옮깁니다.
 - **AI 깊이**: 2D 영상·사진은 AI 모델(Depth Anything V2)이 장면의 깊이를 읽어 두 눈 그림을 만듭니다. S25 Ultra의 NPU(AI 전용 칩)에서 한 장 약 35ms가 걸립니다.
 
+### 빠른 설정의 3D 타일
+
+화면 위를 끌어내리면 나오는 빠른 설정 창에 **3D** 타일을 넣어 두면, 유튜브 같은 앱을 보다가 DepthFlix를 열지 않고도 그 화면을 바로 3D로 볼 수 있습니다.
+
+![빠른 설정의 3D 타일](docs/images/screen3d-tile.png)
+
+- **누르면** 화면 3D가 시작됩니다. 화면 공유 창에서 **"앱 하나 공유"**로 두고 3D로 볼 앱을 고릅니다. 자세한 순서는 아래 [사용법 4](#사용법)에 있습니다.
+- **켜져 있을 때 누르면** 화면 3D가 끝납니다. 켜져 있는 동안에는 타일이 켜진 색으로 보입니다.
+- **타일 넣는 법**: DepthFlix를 설치해도 타일이 저절로 생기지는 않습니다. 안드로이드는 앱이 타일을 스스로 넣지 못하게 하기 때문입니다. 아래 둘 중 하나로 직접 넣습니다.
+  - DepthFlix를 처음 열 때 뜨는 타일 추가 창에서 **추가**를 누릅니다.
+  - 빠른 설정 창의 **편집**(연필 모양) 화면에서 **DepthFlix › 3D**를 찾아 끌어다 놓습니다.
+
+![빠른 설정 편집 화면에 있는 DepthFlix의 3D 타일](docs/images/screen3d-tile-add.png)
+
 ### v1.5.0에서 바뀐 것
 
 - **화면 3D (새 기능)**: 유튜브 같은 **다른 앱에 뜬 SBS 영상을 그 자리에서 3D로** 봅니다. 영상을 내려받거나 DepthFlix로 보낼 필요가 없습니다. 일반 2D 화면도 **AI 3D**로 볼 수 있습니다. 사용법은 아래 [4. 다른 앱 화면을 3D로](#사용법)에 있습니다.
@@ -241,6 +255,20 @@ The film is **only a lens**: the phone has no 3D engine, so the app does three t
 - **Weaving**: both eyes' pictures are mixed per pixel to match the film's lenses, with blending curves measured separately for red, green and blue.
 - **Eye tracking**: the front camera finds both irises about 60 times a second and moves the weave with your head, so 3D holds as you move.
 - **AI depth**: for 2D videos and photos an AI model (Depth Anything V2) reads the depth of the scene and builds the two eyes' pictures, about 35 ms a frame on the S25 Ultra's NPU (its AI chip).
+
+### The 3D tile in Quick Settings
+
+Put the **3D** tile in the Quick Settings panel (swipe down from the top of the screen) and you can turn the app you are watching, YouTube for example, into 3D without opening DepthFlix.
+
+![The 3D tile in Quick Settings](docs/images/screen3d-tile.png)
+
+- **Tap it** and Screen 3D starts. In the screen-sharing window leave **"Share one app"** and choose the app to watch in 3D. The full steps are in [How to use, 4](#how-to-use) below.
+- **Tap it while it is on** and Screen 3D ends. The tile is shown lit while Screen 3D is running.
+- **Adding the tile**: installing DepthFlix does not put the tile there by itself, because Android does not let an app add its own tile. Add it one of these two ways.
+  - Tap **Add** in the window that appears the first time DepthFlix opens.
+  - In the panel's **edit** screen (the pencil), find **DepthFlix › 3D** and drag it in.
+
+![The DepthFlix 3D tile in the Quick Settings edit screen](docs/images/screen3d-tile-add.png)
 
 ### What's new in v1.5.0
 

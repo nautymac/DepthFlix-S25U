@@ -184,7 +184,7 @@ final class GlassTuner extends FrameLayout {
         LinearLayout r = new LinearLayout(getContext());
         r.setOrientation(LinearLayout.HORIZONTAL);
         r.setGravity(Gravity.CENTER_VERTICAL);
-        r.addView(text[which], new LinearLayout.LayoutParams(dp(64), ViewGroup.LayoutParams.WRAP_CONTENT));
+        r.addView(text[which], new LinearLayout.LayoutParams(dp(88), ViewGroup.LayoutParams.WRAP_CONTENT));
         r.addView(stepButton("−", which, -1), new LinearLayout.LayoutParams(dp(34), dp(30)));
         r.addView(seek[which], new LinearLayout.LayoutParams(0, dp(30), 1f));
         r.addView(stepButton("+", which, +1), new LinearLayout.LayoutParams(dp(34), dp(30)));

@@ -197,6 +197,18 @@ final class EyeTracker {
         if (thread != null) {
             return;
         }
+        // One tracker at a time in the process. Two running together (the 3D Fit tool in
+        // front while Screen 3D turns on) crashed inside the face landmarker (SIGBUS,
+        // 2026-11-22): the one that was running is stopped, and waited for, first.
+        EyeTracker other;
+        synchronized (RUNNING_LOCK) {
+            other = running;
+            running = this;
+        }
+        if (other != null && other != this) {
+            Log.i(TAG, "another tracker was running: stopping it first");
+            other.stopAndWait();
+        }
         thread = new HandlerThread("eye-tracker");
         thread.start();
         handler = new Handler(thread.getLooper());
@@ -341,7 +353,48 @@ final class EyeTracker {
         }
     }
 
+    private static final Object RUNNING_LOCK = new Object();
+    /** The tracker that has the camera now, if any (see start()). */
+    private static EyeTracker running;
+
+    /**
+     * Stops a tracker that another one is about to replace: camera and landmarker closed
+     * on its own thread, and that thread finished, before this returns.
+     */
+    private void stopAndWait() {
+        Handler h = handler;
+        HandlerThread t = thread;
+        if (t == null || h == null) {
+            return;
+        }
+        thread = null;
+        handler = null;
+        h.post(() -> {
+            try {
+                if (session != null) session.close();
+                if (device != null) device.close();
+                if (reader != null) reader.close();
+                if (landmarker != null) landmarker.close();
+            } catch (Exception e) {
+                Log.w(TAG, "stop", e);
+            }
+            session = null;
+            device = null;
+            reader = null;
+            landmarker = null;
+        });
+        t.quitSafely();
+        try {
+            t.join(3000);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+    }
+
     void stop() {
+        synchronized (RUNNING_LOCK) {
+            if (running == this) running = null;
+        }
         if (thread == null) {
             return;
         }

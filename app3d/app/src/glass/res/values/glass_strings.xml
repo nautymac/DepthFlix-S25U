@@ -90,4 +90,26 @@
     <string name="glass_reset_done">OK</string>
     <string name="glass_reset_undo">Undo</string>
     <string name="glass_reset_undone">Back to your previous values</string>
+    <string name="screen3d_title">Screen 3D</string>
+    <string name="screen3d_note_text">Tap the 3D button on a side-by-side picture. In 3D, swipe right to left for the menu.</string>
+    <string name="screen3d_tile">3D</string>
+    <string name="screen3d_size_only">Screen 3D only works when the app fills the whole screen (%1$d×%2$d).</string>
+    <string name="screen3d_native_only">Screen 3D only works at 3120×1440. Set Settings > Display > Screen resolution to the highest (WQHD+).</string>
+    <string name="screen3d_off">3D off</string>
+    <string name="screen3d_src_auto">Source: auto %1$s</string>
+    <string name="screen3d_src_169">Source: 16:9 %1$s</string>
+    <string name="screen3d_src_full">Source: full %1$s</string>
+    <string name="screen3d_contrast">Contrast %1$.2f</string>
+    <string name="screen3d_mode_sbs">Mode: SBS 3D</string>
+    <string name="screen3d_mode_ai">Mode: AI 3D</string>
+    <string name="screen3d_mode_ai_loading">Mode: AI 3D (loading)</string>
+    <string name="screen3d_boost">Bright %1$.2f</string>
+    <string name="screen3d_phase">Phase %1$.2f</string>
+    <string name="screen3d_stop">End</string>
+    <string name="screen3d_stopped">Screen 3D ended</string>
+    <string name="screen3d_need_overlay">Allow \"Appear on top\", then press the button again</string>
+    <string name="screen3d_pick_app">Keep \"Share one app\", press Next and pick the app to watch in 3D. \"Share entire screen\" does not work.</string>
+    <string name="screen3d_whole_screen">The entire screen is being shared, so 3D cannot be made. Please choose \"Share one app\" again.</string>
+    <string name="screen3d_started">In that app, tap the 3D button at the right edge. In 3D, swipe right to left for the menu (source, fill, shape, 3D off). Long-press the button to end.</string>
+    <string name="screen3d_rotate">Hold the phone in landscape with the front camera on the left</string>
 </resources>

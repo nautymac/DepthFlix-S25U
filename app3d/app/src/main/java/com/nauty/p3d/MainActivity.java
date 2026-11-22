@@ -133,6 +133,37 @@ public class MainActivity extends Activity {
                 }
             });
             ((LinearLayout.LayoutParams) setup.getLayoutParams()).weight = 0.7f;
+            setupButton = setup;
+            showSetupForOrientation(getResources().getConfiguration());
+            // Screen 3D: any app's picture in 3D. The class and its label live in the glass
+            // source set, so both are looked up by name.
+            int label = getResources().getIdentifier("screen3d_title", "string", getPackageName());
+            boolean hasScreen3d = false;
+            try {
+                Class.forName("com.nauty.p3d.glass.ScreenWeaveActivity");
+                hasScreen3d = label != 0;
+            } catch (ClassNotFoundException ignored) { }
+            if (hasScreen3d) {
+                Button screen = addButton(row, getString(label), new View.OnClickListener() {
+                    @Override public void onClick(View v) {
+                        Intent i = new Intent();
+                        i.setClassName(MainActivity.this, "com.nauty.p3d.glass.ScreenWeaveActivity");
+                        startActivity(i);
+                    }
+                });
+                ((LinearLayout.LayoutParams) screen.getLayoutParams()).weight = 0.7f;
+                // Once, when this screen is up: offer the Quick Settings tile for Screen 3D.
+                row.postDelayed(new Runnable() {
+                    @Override public void run() {
+                        if (isFinishing() || !hasWindowFocus()) return;
+                        try {
+                            Class.forName("com.nauty.p3d.glass.ScreenWeaveActivity")
+                                    .getMethod("offerTile", android.app.Activity.class)
+                                    .invoke(null, MainActivity.this);
+                        } catch (Exception ignored) { }
+                    }
+                }, 1200);
+            }
         }
         // Same height for every button in the row. In portrait a long label ("URL/스트리밍
         // 열기") wraps to two lines and the row looked ragged; matching the row's height
@@ -250,6 +281,27 @@ public class MainActivity extends Activity {
 
     private int dp(int v) {
         return (int) (v * getResources().getDisplayMetrics().density);
+    }
+
+    /** The "3D setup" button of the glass build (null elsewhere). */
+    private Button setupButton;
+
+    /**
+     * 3D setup is used with the phone in landscape (the tool itself is landscape only), and
+     * in portrait its button crowded the row: it is shown in landscape only.
+     */
+    private void showSetupForOrientation(android.content.res.Configuration c) {
+        if (setupButton == null) return;
+        setupButton.setVisibility(
+                c.orientation == android.content.res.Configuration.ORIENTATION_LANDSCAPE
+                        ? View.VISIBLE : View.GONE);
+    }
+
+    /** The activity keeps running through a rotation (configChanges in the manifest). */
+    @Override
+    public void onConfigurationChanged(android.content.res.Configuration c) {
+        super.onConfigurationChanged(c);
+        showSetupForOrientation(c);
     }
 
     @Override

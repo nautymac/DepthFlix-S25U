@@ -85,4 +85,26 @@
     <string name="glass_reset_done">확인</string>
     <string name="glass_reset_undo">되돌리기</string>
     <string name="glass_reset_undone">이전 값으로 되돌렸습니다</string>
+    <string name="screen3d_title">화면 3D</string>
+    <string name="screen3d_note_text">SBS 화면에서 3D 버튼을 누르세요. 3D 중에 오른쪽에서 왼쪽으로 밀면 메뉴가 나옵니다.</string>
+    <string name="screen3d_tile">3D</string>
+    <string name="screen3d_size_only">화면 3D는 앱이 화면 전체(%1$d×%2$d)를 채울 때만 됩니다.</string>
+    <string name="screen3d_native_only">화면 3D는 해상도 3120×1440에서만 됩니다. 설정 › 디스플레이 › 화면 해상도를 가장 높은 값(WQHD+)으로 바꿔 주세요.</string>
+    <string name="screen3d_off">3D 끄기</string>
+    <string name="screen3d_src_auto">원본: 자동 %1$s</string>
+    <string name="screen3d_src_169">원본: 16:9 %1$s</string>
+    <string name="screen3d_src_full">원본: 전체 %1$s</string>
+    <string name="screen3d_contrast">대비 %1$.2f</string>
+    <string name="screen3d_mode_sbs">방식: SBS 3D</string>
+    <string name="screen3d_mode_ai">방식: AI 3D</string>
+    <string name="screen3d_mode_ai_loading">방식: AI 3D (준비 중)</string>
+    <string name="screen3d_boost">밝기 %1$.2f</string>
+    <string name="screen3d_phase">위상 %1$.2f</string>
+    <string name="screen3d_stop">끝내기</string>
+    <string name="screen3d_stopped">화면 3D를 끝냈습니다</string>
+    <string name="screen3d_need_overlay">‘다른 앱 위에 표시’를 허용한 뒤 다시 눌러 주세요</string>
+    <string name="screen3d_pick_app">반드시 ‘앱 하나 공유’로 두고 다음을 눌러 3D로 볼 앱을 고르세요. ‘전체 화면 공유’는 안 됩니다.</string>
+    <string name="screen3d_whole_screen">화면 전체가 공유되어 3D를 만들 수 없습니다. ‘앱 하나 공유’로 다시 골라 주세요.</string>
+    <string name="screen3d_started">볼 앱에서 화면 오른쪽의 3D 버튼을 누르세요. 3D 중에 오른쪽에서 왼쪽으로 밀면 메뉴(원본·채우기·비율·3D 끄기)가 나옵니다. 버튼을 길게 누르면 끝납니다.</string>
+    <string name="screen3d_rotate">폰을 가로로, 앞카메라가 왼쪽에 오게 돌려 주세요</string>
 </resources>

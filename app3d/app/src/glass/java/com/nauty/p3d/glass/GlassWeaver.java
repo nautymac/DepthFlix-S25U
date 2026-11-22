@@ -28,9 +28,29 @@ final class GlassWeaver implements Stereo3DView.Weaver {
             "attribute vec2 aPos;\n"
             + "void main() { gl_Position = vec4(aPos, 0.0, 1.0); }\n";
 
-    private static final String FRAGMENT =
-            "precision highp float;\n"
-            + "uniform sampler2D uTex;\n"     // SBS: 왼쪽 절반 좌안, 오른쪽 절반 우안
+    /**
+     * @param external true: the SBS picture is an external (SurfaceTexture) texture, as the
+     *                 screen capture of another app is ({@link ScreenWeaveService}); its
+     *                 coordinates go through the SurfaceTexture's transform (uTexM).
+     */
+    private static String fragment(boolean external) {
+        return (external ? "#extension GL_OES_EGL_image_external : require\n" : "")
+            + "precision highp float;\n"
+            // SBS: 왼쪽 절반 좌안, 오른쪽 절반 우안
+            + (external ? "uniform samplerExternalOES uTex;\nuniform mat4 uTexM;\n"
+                        + "uniform vec4 uSrc;\nuniform vec4 uDst;\n"
+                        // AI 3D: a 2D picture, each eye shifted by a depth map (255 = near).
+                        // The same backward warp as the player's (assets/p3d_src.frag).
+                        + "uniform int uAi;\nuniform sampler2D uDepth;\nuniform float uDepthAmt;\n"
+                        + "float warp(vec2 p, float amt) {\n"
+                        + "  float off = amt * (texture2D(uDepth, p).r - 0.4);\n"
+                        + "  for (int i = 0; i < 4; i++) {\n"
+                        + "    float d = texture2D(uDepth, vec2(p.x + off, p.y)).r;\n"
+                        + "    off = 0.5 * (off + amt * (d - 0.4));\n"
+                        + "  }\n"
+                        + "  return off;\n"
+                        + "}\n"
+                        : "uniform sampler2D uTex;\n")
             + "uniform vec2 uSize;\n"         // 화면 픽셀
             + "uniform float uPitch;\n"
             + "uniform float uSlant;\n"
@@ -66,14 +86,53 @@ final class GlassWeaver implements Stereo3DView.Weaver {
             + "    gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);\n"
             + "    return;\n"
             + "  }\n"
-            + "  vec3 l = tone(texture2D(uTex, vec2(uv.x * 0.5, uv.y)).rgb);\n"
-            + "  vec3 r = tone(texture2D(uTex, vec2(0.5 + uv.x * 0.5, uv.y)).rgb);\n"
+            + (external
+                // The SBS picture is the part uSrc of the capture (a 16:9 video on this panel
+                // has black bars beside it, which must not be halved along with it); each
+                // half goes to the part uDst of the panel (fit / fill / stretch).
+                ? "  vec2 p = (uv - uDst.xy) / uDst.zw;\n"
+                + "  if (p.x < 0.0 || p.x > 1.0 || p.y < 0.0 || p.y > 1.0) {\n"
+                + "    gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);\n"
+                + "    return;\n"
+                + "  }\n"
+                + "  p.x = clamp(p.x, 0.002, 0.998);\n"   // keep each eye off the other's edge
+                + "  vec2 tl;\n"
+                + "  vec2 tr;\n"
+                + "  if (uAi == 1) {\n"
+                + "    tl = uSrc.xy + vec2(clamp(p.x + warp(p, -uDepthAmt), 0.0, 1.0), p.y) * uSrc.zw;\n"
+                + "    tr = uSrc.xy + vec2(clamp(p.x + warp(p, uDepthAmt), 0.0, 1.0), p.y) * uSrc.zw;\n"
+                + "  } else {\n"
+                + "    tl = uSrc.xy + vec2(p.x * 0.5, p.y) * uSrc.zw;\n"
+                + "    tr = uSrc.xy + vec2(0.5 + p.x * 0.5, p.y) * uSrc.zw;\n"
+                + "  }\n"
+                + "  vec3 l = tone(texture2D(uTex, (uTexM * vec4(tl, 0.0, 1.0)).xy).rgb);\n"
+                + "  vec3 r = tone(texture2D(uTex, (uTexM * vec4(tr, 0.0, 1.0)).xy).rgb);\n"
+                : "  vec3 l = tone(texture2D(uTex, vec2(uv.x * 0.5, uv.y)).rgb);\n"
+                + "  vec3 r = tone(texture2D(uTex, vec2(0.5 + uv.x * 0.5, uv.y)).rgb);\n")
             + "  float ph = phaseAt();\n"
             + "  vec3 wl = texture2D(uWeave, vec2(ph, 0.25)).rgb;\n"
             + "  vec3 wr = texture2D(uWeave, vec2(ph, 0.75)).rgb;\n"
             + "  if (uSwap == 1) { vec3 t = wl; wl = wr; wr = t; }\n"
             + "  gl_FragColor = vec4(wl * l + wr * r, 1.0);\n"
             + "}\n";
+    }
+
+    private static final int GL_TEXTURE_EXTERNAL_OES = 0x8D65;
+    private final boolean external;
+    private int uTexM;
+    /** The SurfaceTexture's transform for the frame about to be drawn (external only). */
+    private final float[] texMatrix = {1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1};
+    private int uSrc;
+    private int uDst;
+    /** x, y, width, height as fractions: the SBS picture in the capture, and where it goes. */
+    private final float[] srcRect = {0f, 0f, 1f, 1f};
+    private final float[] dstRect = {0f, 0f, 1f, 1f};
+    private int uAi;
+    private int uDepth;
+    private int uDepthAmt;
+    /** AI 3D (external only): depth map texture, 0 = the picture is side-by-side. */
+    private int depthTexture;
+    private float depthAmount;
 
     private volatile Settings settings;
     private final float pixelMm;
@@ -110,6 +169,11 @@ final class GlassWeaver implements Stereo3DView.Weaver {
      * @param panelH 패널 세로 화소
      */
     GlassWeaver(Settings settings, float pixelMm, int panelW, int panelH) {
+        this(settings, pixelMm, panelW, panelH, false);
+    }
+
+    GlassWeaver(Settings settings, float pixelMm, int panelW, int panelH, boolean external) {
+        this.external = external;
         this.settings = settings;
         this.pixelMm = pixelMm;
         this.panelW = panelW;
@@ -127,6 +191,27 @@ final class GlassWeaver implements Stereo3DView.Weaver {
         settings = s;
     }
 
+    /** GL thread, before draw(): the SurfaceTexture transform of the current frame. */
+    void setTexMatrix(float[] m) {
+        System.arraycopy(m, 0, texMatrix, 0, 16);
+    }
+
+    /**
+     * GL thread, before draw() (external only). texture 0: the picture is side-by-side.
+     * Otherwise it is a 2D picture and each eye is shifted by amount per unit of depth
+     * (in picture widths; 0 = flat 2D while the depth is not ready).
+     */
+    void setAiDepth(int texture, float amount) {
+        depthTexture = texture;
+        depthAmount = amount;
+    }
+
+    /** GL thread, before draw() (external only): see srcRect / dstRect. */
+    void setRegion(float[] src, float[] dst) {
+        System.arraycopy(src, 0, srcRect, 0, 4);
+        System.arraycopy(dst, 0, dstRect, 0, 4);
+    }
+
     /** 추적기의 최신 눈 위치. 아무 스레드에서나. */
     void setEye(EyeTracker.State s) {
         eye = s;
@@ -134,7 +219,13 @@ final class GlassWeaver implements Stereo3DView.Weaver {
 
     @Override
     public void onSurfaceCreated() {
-        program = buildProgram(VERTEX, FRAGMENT);
+        program = buildProgram(VERTEX, fragment(external));
+        uTexM = external ? GLES20.glGetUniformLocation(program, "uTexM") : -1;
+        uSrc = external ? GLES20.glGetUniformLocation(program, "uSrc") : -1;
+        uDst = external ? GLES20.glGetUniformLocation(program, "uDst") : -1;
+        uAi = external ? GLES20.glGetUniformLocation(program, "uAi") : -1;
+        uDepth = external ? GLES20.glGetUniformLocation(program, "uDepth") : -1;
+        uDepthAmt = external ? GLES20.glGetUniformLocation(program, "uDepthAmt") : -1;
         aPos = GLES20.glGetAttribLocation(program, "aPos");
         uTex = GLES20.glGetUniformLocation(program, "uTex");
         uSize = GLES20.glGetUniformLocation(program, "uSize");
@@ -176,8 +267,20 @@ final class GlassWeaver implements Stereo3DView.Weaver {
         GLES20.glUseProgram(program);
 
         GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
-        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, sbsTexture);
+        GLES20.glBindTexture(external ? GL_TEXTURE_EXTERNAL_OES : GLES20.GL_TEXTURE_2D, sbsTexture);
         GLES20.glUniform1i(uTex, 0);
+        if (external) {
+            GLES20.glUniformMatrix4fv(uTexM, 1, false, texMatrix, 0);
+            GLES20.glUniform4fv(uSrc, 1, srcRect, 0);
+            GLES20.glUniform4fv(uDst, 1, dstRect, 0);
+            // The depth map has unit 2 to itself (unit 0 is the external picture, 1 the weave).
+            GLES20.glActiveTexture(GLES20.GL_TEXTURE2);
+            GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, depthTexture);
+            GLES20.glUniform1i(uDepth, 2);
+            GLES20.glUniform1i(uAi, depthTexture != 0 ? 1 : 0);
+            GLES20.glUniform1f(uDepthAmt, depthAmount);
+            GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
+        }
         GLES20.glActiveTexture(GLES20.GL_TEXTURE1);
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, weaveTexture);
         GLES20.glUniform1i(uWeave, 1);

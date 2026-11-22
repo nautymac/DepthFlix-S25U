@@ -13,12 +13,21 @@ Leia 태블릿용 [DepthFlix](https://github.com/nautymac/DepthFlix)를 **갤럭
 
 - SBS·TB 3D 영상과 사진을 그대로 봅니다.
 - 일반 2D 영상과 사진은 AI가 3D로 바꿔 줍니다.
+- 유튜브처럼 **다른 앱에 뜬 화면**도 그 자리에서 3D로 봅니다(화면 3D).
 
 이 필름은 **렌즈일 뿐**이고 폰에는 3D 엔진이 없습니다. 그래서 앱이 세 가지를 직접 합니다. 모두 폰 안에서만 처리하고, 카메라 영상이나 사진을 밖으로 보내지 않습니다.
 
 - **위빙**: 두 눈 그림을 화소마다 필름 렌즈에 맞춰 섞습니다. 빨강·초록·파랑마다 따로 측정한 섞기 곡선을 씁니다.
 - **눈 추적**: 앞카메라로 두 눈의 홍채를 초당 약 60번 찾습니다. 머리를 움직여도 3D가 유지되도록 위빙을 옮깁니다.
 - **AI 깊이**: 2D 영상·사진은 AI 모델(Depth Anything V2)이 장면의 깊이를 읽어 두 눈 그림을 만듭니다. S25 Ultra의 NPU(AI 전용 칩)에서 한 장 약 35ms가 걸립니다.
+
+### v1.5.0에서 바뀐 것
+
+- **화면 3D (새 기능)**: 유튜브 같은 **다른 앱에 뜬 SBS 영상을 그 자리에서 3D로** 봅니다. 영상을 내려받거나 DepthFlix로 보낼 필요가 없습니다. 일반 2D 화면도 **AI 3D**로 볼 수 있습니다. 사용법은 아래 [4. 다른 앱 화면을 3D로](#사용법)에 있습니다.
+  - 빠른 설정의 **3D 타일**이나 목록 화면의 **화면 3D** 버튼으로 켭니다.
+  - 3D로 보는 중에 화면을 오른쪽에서 왼쪽으로 밀면 메뉴가 나옵니다: 방식(SBS 3D / AI 3D) · 원본 · 화면 비 · 밝기 · 대비 · 위상 · 3D 끄기.
+  - S25 Ultra에서 캡처와 그리기 모두 초당 120프레임으로 측정됐습니다.
+- **3D 맞추기 버튼은 가로 화면에서만 보입니다.** 줄 맞추기는 처음 한 번만 하면 되고 어차피 가로로 들고 하는 도구라, 세로 화면의 버튼 줄에서는 뺐습니다. 폰을 가로로 돌리면 나타납니다.
 
 ### v1.4.3에서 바뀐 것
 
@@ -51,6 +60,7 @@ Leia 태블릿용 [DepthFlix](https://github.com/nautymac/DepthFlix)를 **갤럭
 
 | 기능 | 설명 |
 |---|---|
+| **화면 3D** | 유튜브 등 **다른 앱의 화면**을 3D로 봅니다. SBS 영상은 그대로, 2D 화면은 AI 깊이로 바꿉니다. 빠른 설정의 **3D** 타일이나 목록의 **화면 3D** 버튼으로 켭니다. 폰 화면 해상도가 3120×1440(WQHD+)이고 앱이 화면 전체를 채울 때만 됩니다. |
 | **자동 판별** | SBS·TB(half·full)·2D를 그림의 화소로 판별합니다. 아주 넓은 영상(32:9 등)은 해상도만으로 SBS로 봅니다. 틀리면 설정에서 직접 고르고, **↺ 자동 판별로 되돌리기**로 되돌립니다. |
 | **AI 깊이 (2D→3D)** | 2D 영상·사진은 AI 깊이로 3D가 됩니다. 아래 재생바의 **AI 깊이 켜짐/꺼짐** 버튼으로 끄면 예전 기울기 방식이 됩니다(모든 영상에 공통으로 기억). 입체감 세기는 설정의 **깊이** 슬라이더로 조절합니다. 모델을 불러오는 첫 1초 남짓, 또는 모델을 쓸 수 없을 때는 예전 기울기 방식으로 보입니다. |
 | **3D ↔ 2D** | 화면을 한 번 터치하면 3D와 2D가 바뀝니다. 2D일 때는 카메라(눈 추적)도 꺼집니다. |
@@ -113,7 +123,7 @@ Leia 태블릿용 [DepthFlix](https://github.com/nautymac/DepthFlix)를 **갤럭
 
 **1. 처음 한 번: 가로·세로 줄 맞추기**
 
-목록 화면 위의 **3D 맞추기** 버튼을 누르면 2D 화면에 안내가 뜹니다. 기본 사진이 들어 있어 바로 3D를 볼 수 있습니다(길게 눌러 ◀ ▶로 넘기기).
+폰을 **가로로** 들면 목록 화면 위에 **3D 맞추기** 버튼이 보입니다(세로 화면에서는 숨겨집니다). 누르면 2D 화면에 안내가 뜹니다. 기본 사진이 들어 있어 바로 3D를 볼 수 있습니다(길게 눌러 ◀ ▶로 넘기기).
 
 ![목록 화면의 3D 맞추기 버튼](docs/images/list-buttons.png)
 
@@ -147,6 +157,44 @@ Leia 태블릿용 [DepthFlix](https://github.com/nautymac/DepthFlix)를 **갤럭
 재생 중 오른쪽 위 **3D 조절**을 누르면 바가 열립니다(위 "3D 조절 바" 표 참고). 엉망이 되면 3D 맞추기 메뉴의 **처음 값으로**를 누릅니다. 한 번 더 묻고, 바로 다음 창에서 **되돌리기**도 할 수 있습니다.
 
 ![재생 중 3D 조절 바](docs/images/player-3d-tune.png)
+
+**4. 다른 앱 화면을 3D로: 화면 3D**
+
+유튜브 같은 다른 앱에서 SBS 영상을 틀어 놓고, 그 화면을 그대로 3D로 봅니다.
+
+1. **켜기**: 빠른 설정 창의 **3D** 타일을 누르거나, DepthFlix 목록 화면의 **화면 3D** 버튼을 누릅니다.
+
+   ![빠른 설정의 3D 타일](docs/images/screen3d-tile.png)
+
+   ![목록 화면의 화면 3D 버튼 (세로 화면)](docs/images/screen3d-list-button.png)
+
+   - 타일은 DepthFlix를 처음 열 때 추가할지 한 번 묻습니다. 안드로이드는 앱이 타일을 스스로 넣지 못하게 하므로, **추가**를 직접 눌러야 합니다. 나중에 넣으려면 빠른 설정의 편집 화면에서 "3D"를 끌어다 놓습니다.
+2. **볼 앱 고르기**: 화면 공유 창이 뜨면 **"앱 하나 공유"** 그대로 두고 **다음**을 누른 뒤, 3D로 볼 앱을 고릅니다.
+   - "전체 화면 공유"로는 되지 않습니다. 앱이 그린 3D 화면이 다시 캡처되어 가는 선으로 가득 차기 때문입니다. 그렇게 고르면 앱이 알아채고 다시 묻습니다.
+3. **3D 켜기**: 그 앱에서 SBS 영상을 전체 화면으로, 폰은 가로(앞카메라 왼쪽)로 두고 화면의 둥근 **3D** 버튼을 누릅니다.
+
+   ![화면에 떠 있는 3D 버튼](docs/images/screen3d-bubble.png)
+
+   - 버튼은 끌어서 옮길 수 있습니다. 길게 누르면 화면 3D가 끝납니다(타일을 다시 눌러도 끝납니다).
+4. **맞추기**: 3D로 보는 중에 화면을 **오른쪽에서 왼쪽으로 밀면** 오른쪽에 메뉴가 나옵니다. 값을 바꾸면 잠시 뒤 스스로 숨습니다.
+
+   ![3D로 보는 중에 연 메뉴](docs/images/screen3d-menu.png)
+
+   | 메뉴 | 하는 일 |
+   |---|---|
+   | **방식** | **SBS 3D**: 좌우로 나란한 영상을 3D로. **AI 3D**: 일반 2D 화면을 AI 깊이로 3D로. |
+   | **원본** | 화면의 어느 부분이 SBS 그림인지. **자동**은 양옆·위아래의 띠를 빼고 영상 부분만 찾습니다(16:9 영상이면 2560×1440). 틀리게 잡으면 **16:9**나 **전체**로 고정합니다. |
+   | **화면 비** | 플레이어와 같습니다: 자동 → 확대해서 채우기 → 16:9 → 2.40:1 → 1.85:1 → 4:3. |
+   | **밝기 · 대비 · 위상** | 슬라이더로 맞춥니다. 플레이어의 3D 조절과 같은 값이라 서로 그대로 적용됩니다. |
+   | **3D 끄기** | 3D를 끄고 원래 화면으로 돌아갑니다. |
+
+알아 둘 점:
+
+- **폰 화면 해상도가 3120×1440(WQHD+)**이어야 합니다(설정 › 디스플레이 › 화면 해상도). 필름의 무늬를 화소 하나하나에 맞춰 그리기 때문에 다른 해상도에서는 켜지지 않습니다.
+- 보는 앱이 **화면 전체**를 채워야 합니다. 분할 화면이나 팝업 창에서는 켜지지 않습니다.
+- 3D로 보는 동안에는 화면을 눌러도 아래 앱이 반응하지 않습니다. 앱을 조작하려면 메뉴의 **3D 끄기**를 누르고, 다시 3D 버튼으로 켭니다.
+- 넷플릭스처럼 화면 캡처를 막는 앱의 영상은 볼 수 없습니다.
+- 유튜브에서 16:9 영상을 그냥 틀면 양옆에 띠가 생깁니다. **원본: 자동**이 이 띠를 빼고 잡습니다.
 
 ### 설치
 
@@ -186,12 +234,21 @@ The **Galaxy S25 Ultra + SpatialGlass 3D film** edition of [DepthFlix](https://g
 
 - SBS and TB 3D videos and photos, as they are.
 - Ordinary 2D videos and photos, turned into 3D by AI.
+- **Another app's screen** (YouTube, for example), turned 3D right where it is (Screen 3D).
 
 The film is **only a lens**: the phone has no 3D engine, so the app does three things itself. All of it happens on the phone; no camera image or photo leaves it.
 
 - **Weaving**: both eyes' pictures are mixed per pixel to match the film's lenses, with blending curves measured separately for red, green and blue.
 - **Eye tracking**: the front camera finds both irises about 60 times a second and moves the weave with your head, so 3D holds as you move.
 - **AI depth**: for 2D videos and photos an AI model (Depth Anything V2) reads the depth of the scene and builds the two eyes' pictures, about 35 ms a frame on the S25 Ultra's NPU (its AI chip).
+
+### What's new in v1.5.0
+
+- **Screen 3D (new)**: watch a **side-by-side video playing in another app**, such as YouTube, **in 3D where it is**. No downloading, no sending it to DepthFlix. An ordinary 2D screen can be watched in **AI 3D** too. See [4. Another app's screen in 3D](#how-to-use) below.
+  - Start it from the **3D tile** in Quick Settings or the **Screen 3D** button on the list screen.
+  - While in 3D, swipe from right to left for the menu: mode (SBS 3D / AI 3D) · source · aspect · brightness · contrast · phase · 3D off.
+  - Measured on the S25 Ultra: capture and drawing both at 120 frames a second.
+- **The 3D setup button shows in landscape only.** Lining up the lens is done once, and the tool is used in landscape anyway, so the button is left out of the row in portrait. Turn the phone to landscape and it appears.
 
 ### What's new in v1.4.3
 
@@ -224,6 +281,7 @@ The film is **only a lens**: the phone has no 3D engine, so the app does three t
 
 | Feature | What it does |
 |---|---|
+| **Screen 3D** | Watch **another app's screen** (YouTube and so on) in 3D: SBS videos as they are, 2D screens by AI depth. Start it from the **3D** tile in Quick Settings or the **Screen 3D** button on the list. Works only with the phone's screen resolution at 3120×1440 (WQHD+) and the app filling the screen. |
 | **Auto detection** | Tells SBS, TB (half and full) and 2D apart from the pixels; very wide videos (32:9 and the like) are SBS by their size alone. If it is wrong, pick the layout in Settings; **↺ Back to automatic detection** undoes that. |
 | **AI depth (2D→3D)** | 2D videos and photos get their 3D from AI depth. The **AI depth on/off** button on the play bar switches it off for the old tilt (one choice for every video). Set the strength with the **Depth** slider in Settings. For the first second or so while the model loads, or if it cannot run, the old tilt is used. |
 | **3D ↔ 2D** | Tap the screen once. In 2D the camera (eye tracking) is off too. |
@@ -286,7 +344,7 @@ Saved, and shared with the 3D setup tool. After a phase change the bar closes by
 
 **1. Once: line up the lens (horizontal and vertical lines)**
 
-Tap **3D setup** at the top of the list screen. It opens in 2D with a short guide; built-in pictures give you 3D to look at right away (long-press, then ◀ ▶). (The screenshots show the Korean UI; on an English phone the app is in English.)
+Hold the phone **in landscape** and **3D setup** appears at the top of the list screen (it is hidden in portrait). Tap it: it opens in 2D with a short guide; built-in pictures give you 3D to look at right away (long-press, then ◀ ▶).
 
 ![The 3D setup button on the list screen](docs/images/list-buttons-en.png)
 
@@ -320,6 +378,40 @@ In 3D setup, **press and hold one finger (about 1 s)** for the menu at the botto
 While playing, tap **3D tune** at the top right (see the "3D tune bar" table above). If things get messed up: **Reset to defaults** in the 3D setup menu. It asks first, and the next window offers **Undo**.
 
 ![The 3D tune bar while playing](docs/images/player-3d-tune-en.png)
+
+**4. Another app's screen in 3D: Screen 3D**
+
+Play a side-by-side video in another app such as YouTube, and watch that screen in 3D as it is.
+
+1. **Start**: tap the **3D** tile in the Quick Settings panel, or the **Screen 3D** button on the DepthFlix list screen.
+
+   ![The 3D tile in Quick Settings](docs/images/screen3d-tile.png)
+
+   - The first time DepthFlix opens it asks once whether to add the tile. Android does not let an app add its own tile, so you have to tap **Add** yourself. To add it later, drag "3D" in from the panel's edit screen.
+2. **Pick the app**: when the screen-sharing window appears, leave it on **"Share one app"**, tap **Next**, and choose the app to watch in 3D.
+   - "Share entire screen" does not work: the 3D picture the app draws would be captured again and fill the screen with thin lines. If you choose it, the app notices and asks again.
+3. **Turn 3D on**: in that app, play the SBS video full screen, hold the phone in landscape (front camera on the left) and tap the round **3D** button on the screen.
+
+   ![The floating 3D button](docs/images/screen3d-bubble.png)
+
+   - The button can be dragged anywhere. A long press ends Screen 3D (so does tapping the tile again).
+4. **Adjust**: while in 3D, **swipe from right to left** and a menu comes in on the right. It hides itself shortly after you change something.
+
+   | Menu | What it does |
+   |---|---|
+   | **Mode** | **SBS 3D**: a side-by-side video in 3D. **AI 3D**: an ordinary 2D screen in 3D by AI depth. |
+   | **Source** | Which part of the screen is the SBS picture. **Auto** leaves out the bars beside or above it and finds the video itself (2560×1440 for a 16:9 video). If it gets it wrong, fix it to **16:9** or **Full**. |
+   | **Aspect** | As in the player: auto → zoom to fill → 16:9 → 2.40:1 → 1.85:1 → 4:3. |
+   | **Brightness · Contrast · Phase** | Sliders. They are the same values as the player's 3D tune, so each applies to the other. |
+   | **3D off** | Turns 3D off and shows the app again. |
+
+Good to know:
+
+- The phone's **screen resolution must be 3120×1440 (WQHD+)** (Settings › Display › Screen resolution). The film's pattern is drawn pixel by pixel, so it does not turn on at other resolutions.
+- The app you watch must fill the **whole screen**. It does not turn on in split screen or a pop-up window.
+- While in 3D, touches do not reach the app underneath. To use the app, tap **3D off** in the menu, then turn it back on with the 3D button.
+- Videos in apps that block screen capture (Netflix and the like) cannot be watched this way.
+- YouTube shows a 16:9 video with bars at the sides. **Source: Auto** leaves those out.
 
 ### Install
 

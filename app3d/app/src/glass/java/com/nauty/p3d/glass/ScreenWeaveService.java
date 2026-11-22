@@ -725,7 +725,7 @@ public final class ScreenWeaveService extends Service {
         label.setTextColor(0xFFFFFFFF);
         label.setTextSize(13);
         label.setPadding((int) (6 * d), 0, 0, 0);
-        row.addView(label, new LinearLayout.LayoutParams((int) (78 * d),
+        row.addView(label, new LinearLayout.LayoutParams((int) (104 * d),
                 LinearLayout.LayoutParams.WRAP_CONTENT));
         android.widget.SeekBar bar = new android.widget.SeekBar(this);
         bar.setMax(SLIDER_MAX);

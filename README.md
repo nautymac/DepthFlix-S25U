@@ -35,6 +35,12 @@ Leia 태블릿용 [DepthFlix](https://github.com/nautymac/DepthFlix)를 **갤럭
 
 ![빠른 설정 편집 화면에 있는 DepthFlix의 3D 타일](docs/images/screen3d-tile-add.png)
 
+### v1.5.1에서 바뀐 것
+
+- **3D 조절 바가 항상 스스로 닫힙니다.** 예전에는 위상을 바꿨을 때만 닫혀서, 밝기나 대비만 바꾸면 계속 떠 있었습니다. 이제 어떤 값을 바꾸든 손을 떼고 1.5초 뒤 닫히고, 열어 두기만 해도 5초 뒤 닫힙니다.
+- **3D 조절 바의 순서**가 위에서부터 밝기 · 대비 · 추적 · 위상으로 바뀌었습니다. 화면 3D 메뉴와 같은 순서입니다.
+- 화면 3D 메뉴의 값 글자 칸을 넓혔습니다(영문에서 "Contrast 0.99"가 두 줄로 접히던 것).
+
 ### v1.5.0에서 바뀐 것
 
 - **화면 3D (새 기능)**: 유튜브 같은 **다른 앱에 뜬 SBS 영상을 그 자리에서 3D로** 봅니다. 영상을 내려받거나 DepthFlix로 보낼 필요가 없습니다. 일반 2D 화면도 **AI 3D**로 볼 수 있습니다. 사용법은 아래 [4. 다른 앱 화면을 3D로](#사용법)에 있습니다.
@@ -93,11 +99,11 @@ Leia 태블릿용 [DepthFlix](https://github.com/nautymac/DepthFlix)를 **갤럭
 
 | 항목 | 언제 |
 |---|---|
-| **위상** | 그림이 겹치거나 앞뒤가 뒤집혀 보일 때. 천천히 움직여 가장 선명한 곳에 둡니다. |
-| **추적** | 고개를 옆으로 움직일 때 3D가 깨질 때 (1.5~2.5). |
 | **밝기 · 대비** | 3D가 어둡거나 흐릴 때. |
+| **추적** | 고개를 옆으로 움직일 때 3D가 깨질 때 (1.5~2.5). |
+| **위상** | 그림이 겹치거나 앞뒤가 뒤집혀 보일 때. 천천히 움직여 가장 선명한 곳에 둡니다. |
 
-값은 저장되고, 3D 맞추기 도구와 같은 값을 씁니다. 위상을 바꾸고 손을 떼면 바는 1.5초 뒤 저절로 닫힙니다.
+값은 저장되고, 3D 맞추기 도구와 같은 값을 씁니다. 값을 바꾸고 손을 떼면 바는 1.5초 뒤, 열어 두기만 하면 5초 뒤 저절로 닫힙니다. (아래 스크린샷은 순서를 바꾸기 전에 찍은 것입니다.)
 
 **설정 패널** (재생 중 아래 **⚙ 설정**)
 
@@ -131,7 +137,7 @@ Leia 태블릿용 [DepthFlix](https://github.com/nautymac/DepthFlix)를 **갤럭
 
 - 큰 버튼 하나로 필름 렌즈의 가로·세로 줄을 맞춥니다.
 - SBS 사진을 3D로 봅니다. 게임 SBS 스크린샷 6장이 기본으로 들어 있습니다.
-- 오른쪽 위 **3D 조절**로 위상·추적·밝기·대비를 맞춥니다.
+- 오른쪽 위 **3D 조절**로 밝기·대비·추적·위상을 맞춥니다.
 
 ### 사용법
 
@@ -271,6 +277,12 @@ Put the **3D** tile in the Quick Settings panel (swipe down from the top of the 
 
 ![The DepthFlix 3D tile in the Quick Settings edit screen](docs/images/screen3d-tile-add.png)
 
+### What's new in v1.5.1
+
+- **The 3D tune bar always closes by itself.** It used to close only after a phase change, so it stayed up if you changed just the brightness or contrast. Now it closes 1.5 s after you lift your finger whatever you changed, and after 5 s if you only opened it.
+- **The order on the 3D tune bar** is now, from the top: brightness · contrast · track · phase, the same as in the Screen 3D menu.
+- Wider value labels in the Screen 3D menu ("Contrast 0.99" wrapped onto two lines in English).
+
 ### What's new in v1.5.0
 
 - **Screen 3D (new)**: watch a **side-by-side video playing in another app**, such as YouTube, **in 3D where it is**. No downloading, no sending it to DepthFlix. An ordinary 2D screen can be watched in **AI 3D** too. See [4. Another app's screen in 3D](#how-to-use) below.
@@ -329,11 +341,11 @@ Put the **3D** tile in the Quick Settings panel (swipe down from the top of the 
 
 | Item | When |
 |---|---|
-| **Phase** | The picture looks doubled or inside-out. Slide slowly to the sharpest point. |
-| **Track** | 3D breaks when you move your head sideways (1.5–2.5). |
 | **Bright · Contrast** | 3D looks dim or flat. |
+| **Track** | 3D breaks when you move your head sideways (1.5–2.5). |
+| **Phase** | The picture looks doubled or inside-out. Slide slowly to the sharpest point. |
 
-Saved, and shared with the 3D setup tool. After a phase change the bar closes by itself 1.5 s after you lift your finger.
+Saved, and shared with the 3D setup tool. The bar closes by itself 1.5 s after you change something and lift your finger, and after 5 s if you only open it. (The screenshot below was taken before the order changed.)
 
 **Settings panel** (while playing, **⚙ Settings** at the bottom)
 
@@ -367,7 +379,7 @@ Saved, and shared with the 3D setup tool. After a phase change the bar closes by
 
 - Lines up the film's lenses (horizontal and vertical) with one big button.
 - Shows SBS photos in 3D; six SBS game screenshots come built in.
-- **3D tune** at the top right sets phase, track, brightness and contrast.
+- **3D tune** at the top right sets brightness, contrast, track and phase.
 
 ### How to use
 

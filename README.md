@@ -103,7 +103,7 @@ Leia 태블릿용 [DepthFlix](https://github.com/nautymac/DepthFlix)를 **갤럭
 | **추적** | 고개를 옆으로 움직일 때 3D가 깨질 때 (1.5~2.5). |
 | **위상** | 그림이 겹치거나 앞뒤가 뒤집혀 보일 때. 천천히 움직여 가장 선명한 곳에 둡니다. |
 
-값은 저장되고, 3D 맞추기 도구와 같은 값을 씁니다. 값을 바꾸고 손을 떼면 바는 1.5초 뒤, 열어 두기만 하면 5초 뒤 저절로 닫힙니다. (아래 스크린샷은 순서를 바꾸기 전에 찍은 것입니다.)
+값은 저장되고, 3D 맞추기 도구와 같은 값을 씁니다. 값을 바꾸고 손을 떼면 바는 1.5초 뒤, 열어 두기만 하면 5초 뒤 저절로 닫힙니다.
 
 **설정 패널** (재생 중 아래 **⚙ 설정**)
 
@@ -345,7 +345,7 @@ Put the **3D** tile in the Quick Settings panel (swipe down from the top of the 
 | **Track** | 3D breaks when you move your head sideways (1.5–2.5). |
 | **Phase** | The picture looks doubled or inside-out. Slide slowly to the sharpest point. |
 
-Saved, and shared with the 3D setup tool. The bar closes by itself 1.5 s after you change something and lift your finger, and after 5 s if you only open it. (The screenshot below was taken before the order changed.)
+Saved, and shared with the 3D setup tool. The bar closes by itself 1.5 s after you change something and lift your finger, and after 5 s if you only open it.
 
 **Settings panel** (while playing, **⚙ Settings** at the bottom)
 

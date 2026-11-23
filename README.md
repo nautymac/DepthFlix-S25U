@@ -35,6 +35,11 @@ Leia 태블릿용 [DepthFlix](https://github.com/nautymac/DepthFlix)를 **갤럭
 
 ![빠른 설정 편집 화면에 있는 DepthFlix의 3D 타일](docs/images/screen3d-tile-add.png)
 
+### v1.5.3에서 바뀐 것
+
+- **USB 처음 열기**: USB를 처음 누르면 안드로이드의 허락 화면(폴더 선택)이 설명 없이 열려 다른 파일 앱처럼 보였습니다. 이제 무엇을 누르면 되는지("이 폴더 사용" → "허용") 먼저 알려 줍니다. 한 번 허락하면 다음부터는 USB를 누르면 DepthFlix 안에서 바로 열립니다.
+- USB를 보는 동안 경로 줄 끝에도 "USB를 한 번 더 누르면 해제"가 나옵니다.
+
 ### v1.5.2에서 바뀐 것
 
 - **이어보기**: 목록 맨 위에 마지막으로 본 영상·사진이 한 줄로 나옵니다. 누르면 보던 자리에서 이어지고, 보고 나오면 그 파일이 있던 폴더로 갑니다. 영상 목록에는 어디까지 봤는지(`▸ 42:10 / 1:58:00`, 다 봤으면 `✓`)도 나옵니다.
@@ -301,6 +306,11 @@ Put the **3D** tile in the Quick Settings panel (swipe down from the top of the 
   - In the panel's **edit** screen (the pencil), find **DepthFlix › 3D** and drag it in.
 
 ![The DepthFlix 3D tile in the Quick Settings edit screen](docs/images/screen3d-tile-add.png)
+
+### What's new in v1.5.3
+
+- **Opening a USB drive the first time**: the first USB tap opened Android's permission screen (a folder picker) with no explanation, so it looked like some other file app. DepthFlix now tells you what to tap first ("Use this folder", then "Allow"). After that one time, USB opens the drive inside DepthFlix straight away.
+- While you browse the drive, the path line also ends with "tap USB again to unmount".
 
 ### What's new in v1.5.2
 

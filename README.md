@@ -177,6 +177,9 @@ Leia 태블릿용 [DepthFlix](https://github.com/nautymac/DepthFlix)를 **갤럭
 
 - 목록에서 영상이나 사진을 고르면 3D로 열립니다. 위의 **사진 보기 / 영상 보기**로 목록을 바꿉니다.
 - **이어보기**: 목록 맨 위의 `▶ 이어보기` 줄을 누르면 마지막으로 보던 자리에서 이어집니다. 사진은 그 폴더의 그 장에서 열립니다. 보고 나오면 그 파일이 있던 폴더로 갑니다.
+
+  ![목록 맨 위의 이어보기 줄 (사진 보기)](docs/images/continue-row.png)
+
   - 마지막으로 본 것이 빼 둔 USB에 있으면 "USB 연결 필요"로 나오고, 폰에서 마지막으로 보던 것도 함께 나옵니다.
   - 줄을 길게 누르면 지우거나 끌 수 있습니다. 다시 켜는 것은 재생 화면의 ⚙ 설정에 있습니다.
 - 2D 영상·사진은 AI 깊이로 자동으로 3D가 됩니다. 처음 열 때 모델을 불러오느라 1초쯤 걸립니다(설치 후 맨 처음 한 번은 몇 초). 끄려면 재생바의 **AI 깊이 켜짐** 버튼을 누릅니다.
@@ -441,6 +444,11 @@ In 3D setup, **press and hold one finger (about 1 s)** for the menu at the botto
 
 - Pick a video or photo from the list and it opens in 3D. **Photos / Videos** at the top switches the list.
 - **Continue watching**: tap the `▶ Continue` row at the top of the list to go on from where you were. A photo opens at its place in its folder. When you come back you land in that file's folder.
+
+  ![The Continue row at the top of the list (Photos)](docs/images/continue-row.png)
+
+  *The screenshot is in Korean. "▶ 이어보기" is ▶ Continue: the last photo's file name, its place in the folder (162 of 1925), and "USB" because it is on a USB drive. Buttons above: Videos · Open URL / stream · USB · 3D setup · Screen 3D.*
+
   - If the last item is on a USB drive that is unplugged, the row says so, and the last item on the phone is shown too.
   - Long-press the row to remove it or turn it off; turn it on again in ⚙ Settings while playing.
 - 2D videos and photos turn 3D by AI depth on their own. Loading the model takes about a second (a few seconds the very first time after installing). To turn it off, tap **AI depth on** on the play bar.

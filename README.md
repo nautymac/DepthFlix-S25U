@@ -35,6 +35,13 @@ Leia 태블릿용 [DepthFlix](https://github.com/nautymac/DepthFlix)를 **갤럭
 
 ![빠른 설정 편집 화면에 있는 DepthFlix의 3D 타일](docs/images/screen3d-tile-add.png)
 
+### v1.5.2에서 바뀐 것
+
+- **이어보기**: 목록 맨 위에 마지막으로 본 영상·사진이 한 줄로 나옵니다. 누르면 보던 자리에서 이어지고, 보고 나오면 그 파일이 있던 폴더로 갑니다. 영상 목록에는 어디까지 봤는지(`▸ 42:10 / 1:58:00`, 다 봤으면 `✓`)도 나옵니다.
+- **USB 해제**: USB를 보는 중에 **USB** 버튼을 한 번 더 누르면 내 파일의 그 USB 화면이 열려, 바로 마운트 해제를 할 수 있습니다. 사용법은 아래 [5. USB 빼기](#사용법)에 있습니다.
+- **같은 이름의 영상**: 다른 폴더에 있는 같은 이름의 영상끼리 본 위치가 섞이던 것과, 영상을 열자마자 닫으면 본 위치가 지워질 수 있던 것을 고쳤습니다.
+- 3D 조절 바의 값 글자 칸을 넓혔습니다(영문에서 "Contrast 1.15"가 두 줄로 접히던 것).
+
 ### v1.5.1에서 바뀐 것
 
 - **3D 조절 바가 항상 스스로 닫힙니다.** 예전에는 위상을 바꿨을 때만 닫혀서, 밝기나 대비만 바꾸면 계속 떠 있었습니다. 이제 어떤 값을 바꾸든 손을 떼고 1.5초 뒤 닫히고, 열어 두기만 해도 5초 뒤 닫힙니다.
@@ -123,7 +130,8 @@ Leia 태블릿용 [DepthFlix](https://github.com/nautymac/DepthFlix)를 **갤럭
 | 기능 | 설명 |
 |---|---|
 | **폰 안의 영상·사진** | 폴더 목록에서 고릅니다. 자주 여는 폴더는 길게 눌러 위로 고정합니다. 보던 위치에서 이어 봅니다. |
-| **USB 드라이브** | 목록 위 **USB**. 처음 한 번 드라이브를 허락하면 폴더·영상·사진을 바로 둘러봅니다. 길게 누르면 다른 드라이브를 고릅니다. |
+| **이어보기** | 목록 맨 위에 마지막으로 본 영상(사진 보기에서는 사진)이 나옵니다. 유튜브·네트워크 재생은 나오지 않습니다. 길게 눌러 지우거나 끕니다. |
+| **USB 드라이브** | 목록 위 **USB**. 처음 한 번 드라이브를 허락하면 폴더·영상·사진을 바로 둘러봅니다. 길게 누르면 다른 드라이브를 고릅니다. USB를 보는 중에 한 번 더 누르면 해제 화면이 열립니다. |
 | **유튜브** | 유튜브 앱에서 **공유 → DepthFlix**, 또는 **URL/스트리밍 열기**에 링크를 붙여 넣습니다. 실시간 방송도 됩니다. 화질과 자막 언어를 고르고, 고른 화질은 다음부터 기본값이 됩니다. |
 | **URL · SMB · DLNA** | **URL/스트리밍 열기**에서 스트리밍 주소, 윈도 공유 폴더(SMB), 미디어 서버(DLNA: Plex·Jellyfin 등)를 엽니다. |
 | **다른 앱에서** | 갤러리나 파일 앱에서 영상·사진을 "다음으로 열기 → DepthFlix"로 바로 엽니다. |
@@ -168,6 +176,9 @@ Leia 태블릿용 [DepthFlix](https://github.com/nautymac/DepthFlix)를 **갤럭
 **2. 보기**
 
 - 목록에서 영상이나 사진을 고르면 3D로 열립니다. 위의 **사진 보기 / 영상 보기**로 목록을 바꿉니다.
+- **이어보기**: 목록 맨 위의 `▶ 이어보기` 줄을 누르면 마지막으로 보던 자리에서 이어집니다. 사진은 그 폴더의 그 장에서 열립니다. 보고 나오면 그 파일이 있던 폴더로 갑니다.
+  - 마지막으로 본 것이 빼 둔 USB에 있으면 "USB 연결 필요"로 나오고, 폰에서 마지막으로 보던 것도 함께 나옵니다.
+  - 줄을 길게 누르면 지우거나 끌 수 있습니다. 다시 켜는 것은 재생 화면의 ⚙ 설정에 있습니다.
 - 2D 영상·사진은 AI 깊이로 자동으로 3D가 됩니다. 처음 열 때 모델을 불러오느라 1초쯤 걸립니다(설치 후 맨 처음 한 번은 몇 초). 끄려면 재생바의 **AI 깊이 켜짐** 버튼을 누릅니다.
 - 화면 한 번 터치: 3D ↔ 2D. 아래 재생바: 목록 · ◀◀ ▶▶ · 재생 위치 · AI 깊이 켜짐/꺼짐 · ⚙ 설정.
 - 16:9 영상을 화면에 꽉 채우려면 ⚙ 설정 › **화면 비**를 "확대해서 채우기"로 바꿉니다.
@@ -216,6 +227,17 @@ Leia 태블릿용 [DepthFlix](https://github.com/nautymac/DepthFlix)를 **갤럭
 - 3D로 보는 동안에는 화면을 눌러도 아래 앱이 반응하지 않습니다. 앱을 조작하려면 메뉴의 **3D 끄기**를 누르고, 다시 3D 버튼으로 켭니다.
 - 넷플릭스처럼 화면 캡처를 막는 앱의 영상은 볼 수 없습니다.
 - 유튜브에서 16:9 영상을 그냥 틀면 양옆에 띠가 생깁니다. **원본: 자동**이 이 띠를 빼고 잡습니다.
+
+**5. USB 빼기**
+
+1. USB를 보는 동안에는 **USB** 버튼 아래에 작게 "한 번 더: 해제"가 나옵니다. 한 번 더 누릅니다.
+2. 내 파일에서 그 USB 화면이 열립니다. 오른쪽 위 **⋮ › 마운트 해제**를 누릅니다. 바로 아래의 **포맷**은 USB를 모두 지우는 메뉴이니 누르지 마세요.
+
+   ![내 파일의 USB 화면: ⋮ 메뉴의 마운트 해제](docs/images/usb-unmount.png)
+
+3. DepthFlix로 돌아오면 정말 해제됐는지 확인해서 알려 줍니다. "이제 뽑아도 됩니다"가 나온 뒤에 뽑으세요.
+
+안드로이드는 앱이 USB를 직접 해제하지 못하게 하므로, 해제할 수 있는 화면까지 바로 데려다 줍니다.
 
 ### 설치
 
@@ -276,6 +298,13 @@ Put the **3D** tile in the Quick Settings panel (swipe down from the top of the 
   - In the panel's **edit** screen (the pencil), find **DepthFlix › 3D** and drag it in.
 
 ![The DepthFlix 3D tile in the Quick Settings edit screen](docs/images/screen3d-tile-add.png)
+
+### What's new in v1.5.2
+
+- **Continue watching**: the last video or photo is one row at the top of the list. Tap it to go on from where you were; when you come back you land in that file's folder. The video lists also show how far you got (`▸ 42:10 / 1:58:00`, or `✓` when finished).
+- **Releasing a USB drive**: while browsing the drive, tap **USB** once more and My Files opens on that drive, where you can unmount it. See [5. Removing a USB drive](#how-to-use) below.
+- **Videos with the same name**: same-named videos in different folders no longer share one position, and closing a video right after opening it no longer loses its position.
+- Wider value labels on the 3D tune bar ("Contrast 1.15" wrapped onto two lines in English).
 
 ### What's new in v1.5.1
 
@@ -365,7 +394,8 @@ Saved, and shared with the 3D setup tool. The bar closes by itself 1.5 s after y
 | Feature | What it does |
 |---|---|
 | **Videos and photos on the phone** | Pick from the folder list; long-press a folder to pin it to the top. Videos resume where you left off. |
-| **USB drives** | The **USB** button above the list. Allow the drive once, then browse its folders, videos and photos. Long-press to pick another drive. |
+| **Continue watching** | The last video (or photo, in Photos) is shown at the top of the list. YouTube and network playback are not listed. Long-press to remove it or turn it off. |
+| **USB drives** | The **USB** button above the list. Allow the drive once, then browse its folders, videos and photos. Long-press to pick another drive. Tap it once more while browsing the drive to open the unmount screen. |
 | **YouTube** | In the YouTube app, **Share → DepthFlix**, or paste the link in **Open URL / stream**. Live streams work. Pick the quality and subtitle language; the quality you pick becomes the default. |
 | **URL · SMB · DLNA** | **Open URL / stream** opens a stream address, a Windows shared folder (SMB) or a media server (DLNA: Plex, Jellyfin and others). |
 | **From other apps** | "Open with → DepthFlix" a video or photo from the gallery or a file manager. |
@@ -410,6 +440,9 @@ In 3D setup, **press and hold one finger (about 1 s)** for the menu at the botto
 **2. Watching**
 
 - Pick a video or photo from the list and it opens in 3D. **Photos / Videos** at the top switches the list.
+- **Continue watching**: tap the `▶ Continue` row at the top of the list to go on from where you were. A photo opens at its place in its folder. When you come back you land in that file's folder.
+  - If the last item is on a USB drive that is unplugged, the row says so, and the last item on the phone is shown too.
+  - Long-press the row to remove it or turn it off; turn it on again in ⚙ Settings while playing.
 - 2D videos and photos turn 3D by AI depth on their own. Loading the model takes about a second (a few seconds the very first time after installing). To turn it off, tap **AI depth on** on the play bar.
 - Tap once: 3D ↔ 2D. The bar at the bottom: list · ◀◀ ▶▶ · position · AI depth on/off · ⚙ Settings.
 - To fill the screen with a 16:9 video, set ⚙ Settings › **Aspect** to "zoom to fill".
@@ -458,6 +491,19 @@ Good to know:
 - While in 3D, touches do not reach the app underneath. To use the app, tap **3D off** in the menu, then turn it back on with the 3D button.
 - Videos in apps that block screen capture (Netflix and the like) cannot be watched this way.
 - YouTube shows a 16:9 video with bars at the sides. **Source: Auto** leaves those out.
+
+**5. Removing a USB drive**
+
+1. While you browse the drive, the **USB** button shows a small "Again: unmount" on its second line. Tap it once more.
+2. My Files opens on that drive. Tap **⋮** at the top right, then **Unmount**. Do not tap **Format**, right below it: it erases the whole drive.
+
+   ![My Files on the USB drive: Unmount in the ⋮ menu](docs/images/usb-unmount.png)
+
+   *The screenshot is in Korean. Menu from the top: Select · View · Add folder · **Unmount (마운트 해제)** · Format (포맷) · Trash · Settings. "USB 저장장치 1" is USB storage 1.*
+
+3. Back in DepthFlix, it checks that the drive is really unmounted and tells you. Unplug it after "You can unplug it now".
+
+Android does not let an app unmount a drive itself, so DepthFlix takes you straight to the screen that can.
 
 ### Install
 
